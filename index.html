@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TechTrack — Painel de controle com indicadores do parque de equipamentos de TI.">
+  <title>Dashboard — TechTrack</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navegação lateral principal -->
+  <nav id="nav-principal" aria-label="Navegação principal">
+    <header class="nav-cabecalho">
+      <h1 class="nav-logo">TechTrack</h1>
+      <p class="nav-subtitulo">Gestão de TI</p>
+    </header>
+
+    <ul class="nav-lista">
+      <li class="nav-item">
+        <a href="index.html" class="nav-link" aria-current="page">
+          Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="equipamentos.html" class="nav-link">
+          Equipamentos
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="manutencoes.html" class="nav-link">
+          Manutenções
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="cadastros.html" class="nav-link">
+          Cadastros
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="relatorios.html" class="nav-link">
+          Relatórios
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Área principal da página -->
+  <div class="pagina-wrapper">
+
+    <header class="pagina-cabecalho">
+      <h2 class="pagina-titulo">Dashboard</h2>
+      <p class="pagina-descricao">Visão geral do parque de equipamentos e das manutenções em andamento.</p>
+    </header>
+
+    <main id="conteudo-principal">
+
+      <!-- Indicadores de equipamentos -->
+      <section id="indicadores-equipamentos" aria-labelledby="titulo-equip">
+        <h3 id="titulo-equip">Equipamentos</h3>
+
+        <ul class="lista-indicadores">
+          <li class="card-indicador">
+            <span class="indicador-valor" id="total-equipamentos">—</span>
+            <span class="indicador-label">Total cadastrado</span>
+          </li>
+          <li class="card-indicador">
+            <span class="indicador-valor" id="total-operacionais">—</span>
+            <span class="indicador-label">Operacionais</span>
+          </li>
+          <li class="card-indicador">
+            <span class="indicador-valor" id="total-em-manutencao">—</span>
+            <span class="indicador-label">Em manutenção</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Indicadores de manutenções -->
+      <section id="indicadores-manutencoes" aria-labelledby="titulo-manut">
+        <h3 id="titulo-manut">Manutenções</h3>
+
+        <ul class="lista-indicadores">
+          <li class="card-indicador">
+            <span class="indicador-valor" id="total-manut-abertas">—</span>
+            <span class="indicador-label">Abertas</span>
+          </li>
+          <li class="card-indicador">
+            <span class="indicador-valor" id="total-manut-atrasadas">—</span>
+            <span class="indicador-label">Atrasadas</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Alertas -->
+      <section id="alertas" aria-labelledby="titulo-alertas">
+        <h3 id="titulo-alertas">Alertas</h3>
+
+        <ul class="lista-indicadores">
+          <li class="card-indicador">
+            <span class="indicador-valor" id="total-garantias-vencendo">—</span>
+            <span class="indicador-label">Garantias vencem em 30 dias</span>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Atividades recentes -->
+      <section id="atividades-recentes" aria-labelledby="titulo-atividades">
+        <h3 id="titulo-atividades">Atividades recentes</h3>
+
+        <p class="estado-vazio" id="msg-sem-atividades">
+          Nenhuma atividade registrada. Os eventos do sistema aparecerão aqui conforme você utilizar o TechTrack.
+        </p>
+
+        <!-- A lista de eventos será inserida pelo dashboard.js -->
+        <ul class="lista-eventos" id="lista-eventos" aria-live="polite"></ul>
+      </section>
+
+    </main>
+
+    <footer class="pagina-rodape">
+      <p>TechTrack &mdash; Projeto acadêmico UTFPR &mdash; Desenvolvimento Web</p>
+    </footer>
+
+  </div><!-- fim .pagina-wrapper -->
+
+  <script src="js/armazenamento.js" defer></script>
+  <script src="js/dados.js" defer></script>
+  <script src="js/funcoes.js" defer></script>
+  <script src="js/dashboard.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TechTrack — Inventário de equipamentos de TI com pesquisa e filtros.">
+  <title>Equipamentos — TechTrack</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navegação lateral principal -->
+  <nav id="nav-principal" aria-label="Navegação principal">
+    <header class="nav-cabecalho">
+      <h1 class="nav-logo">TechTrack</h1>
+      <p class="nav-subtitulo">Gestão de TI</p>
+    </header>
+
+    <ul class="nav-lista">
+      <li class="nav-item">
+        <a href="index.html" class="nav-link">
+          Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="equipamentos.html" class="nav-link" aria-current="page">
+          Equipamentos
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="manutencoes.html" class="nav-link">
+          Manutenções
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="cadastros.html" class="nav-link">
+          Cadastros
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="relatorios.html" class="nav-link">
+          Relatórios
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Área principal da página -->
+  <div class="pagina-wrapper">
+
+    <header class="pagina-cabecalho">
+      <h2 class="pagina-titulo">Equipamentos</h2>
+      <p class="pagina-descricao">Inventário completo dos equipamentos de TI cadastrados no sistema.</p>
+    </header>
+
+    <main id="conteudo-principal">
+
+      <!-- Barra de ações: pesquisa, filtros e botão de novo cadastro -->
+      <section id="barra-acoes" aria-labelledby="titulo-acoes">
+        <h3 id="titulo-acoes" class="sr-only">Pesquisa e filtros</h3>
+
+        <div class="acoes-busca">
+          <label for="campo-busca">Pesquisar</label>
+          <input
+            type="search"
+            id="campo-busca"
+            name="busca"
+            placeholder="Patrimônio, modelo, fabricante ou número de série…"
+            autocomplete="off"
+            disabled
+          >
+        </div>
+
+        <div class="acoes-filtros">
+          <label for="filtro-categoria">Categoria</label>
+          <select id="filtro-categoria" name="filtro-categoria" disabled>
+            <option value="">Todas</option>
+            <option value="desktop">Desktop</option>
+            <option value="notebook">Notebook</option>
+            <option value="impressora">Impressora</option>
+            <option value="servidor">Servidor</option>
+            <option value="outro">Outro</option>
+          </select>
+
+          <label for="filtro-situacao">Situação</label>
+          <select id="filtro-situacao" name="filtro-situacao" disabled>
+            <option value="">Todas</option>
+            <option value="operacional">Operacional</option>
+            <option value="em_manutencao">Em manutenção</option>
+            <option value="inativo">Inativo</option>
+            <option value="descartado">Descartado</option>
+          </select>
+
+          <label for="filtro-local">Localização</label>
+          <select id="filtro-local" name="filtro-local" disabled>
+            <option value="">Todas</option>
+          </select>
+        </div>
+
+        <!-- Botão sem comportamento nesta etapa — JavaScript será adicionado na Etapa 04 -->
+        <div class="acoes-botoes">
+          <button type="button" id="btn-novo-equipamento" disabled>
+            Novo equipamento
+          </button>
+        </div>
+      </section>
+
+      <!-- Tabela de equipamentos -->
+      <section id="secao-tabela-equipamentos" aria-labelledby="titulo-tabela-equip">
+        <h3 id="titulo-tabela-equip" class="sr-only">Lista de equipamentos</h3>
+
+        <!-- Estado vazio — exibido enquanto não houver equipamentos cadastrados -->
+        <p class="estado-vazio" id="msg-sem-equipamentos">
+          Nenhum equipamento cadastrado. Os equipamentos aparecerão nesta tabela após o cadastro.
+        </p>
+
+        <!-- Tabela — será preenchida e exibida pelo equipamentos.js -->
+        <div class="tabela-wrapper" id="wrapper-tabela-equipamentos" hidden>
+          <table id="tabela-equipamentos">
+            <thead>
+              <tr>
+                <th scope="col">Patrimônio</th>
+                <th scope="col">Equipamento</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Localização</th>
+                <th scope="col">Situação</th>
+                <th scope="col">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="corpo-tabela-equipamentos">
+              <!-- Linhas inseridas pelo JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Painel de formulário — aparece ao criar ou editar um equipamento -->
+      <!-- Será controlado pelo equipamentos.js na Etapa 04 -->
+      <section id="painel-formulario-equipamento" aria-labelledby="titulo-form-equip" hidden>
+        <h3 id="titulo-form-equip">Cadastrar equipamento</h3>
+        <p>O formulário de cadastro e edição de equipamentos será implementado na Etapa 04.</p>
+      </section>
+
+    </main>
+
+    <footer class="pagina-rodape">
+      <p>TechTrack &mdash; Projeto acadêmico UTFPR &mdash; Desenvolvimento Web</p>
+    </footer>
+
+  </div><!-- fim .pagina-wrapper -->
+
+  <script src="js/armazenamento.js" defer></script>
+  <script src="js/dados.js" defer></script>
+  <script src="js/funcoes.js" defer></script>
+  <script src="js/equipamentos.js" defer></script>
+</body>
+</html>

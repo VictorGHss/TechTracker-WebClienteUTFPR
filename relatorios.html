@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TechTrack — Relatórios de equipamentos, manutenções, custos e garantias. Backup dos dados.">
+  <title>Relatórios — TechTrack</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navegação lateral principal -->
+  <nav id="nav-principal" aria-label="Navegação principal">
+    <header class="nav-cabecalho">
+      <h1 class="nav-logo">TechTrack</h1>
+      <p class="nav-subtitulo">Gestão de TI</p>
+    </header>
+
+    <ul class="nav-lista">
+      <li class="nav-item">
+        <a href="index.html" class="nav-link">
+          Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="equipamentos.html" class="nav-link">
+          Equipamentos
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="manutencoes.html" class="nav-link">
+          Manutenções
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="cadastros.html" class="nav-link">
+          Cadastros
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="relatorios.html" class="nav-link" aria-current="page">
+          Relatórios
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Área principal da página -->
+  <div class="pagina-wrapper">
+
+    <header class="pagina-cabecalho">
+      <h2 class="pagina-titulo">Relatórios</h2>
+      <p class="pagina-descricao">Relatórios gerenciais e exportação de dados do sistema.</p>
+    </header>
+
+    <main id="conteudo-principal">
+
+      <!-- ================================================================ -->
+      <!-- SEÇÃO: Relatório de equipamentos                                  -->
+      <!-- ================================================================ -->
+      <section id="relatorio-equipamentos" aria-labelledby="titulo-rel-equip">
+        <h3 id="titulo-rel-equip">Equipamentos</h3>
+        <p class="secao-descricao">
+          Inventário completo dos equipamentos cadastrados com situação, categoria e localização.
+        </p>
+
+        <p class="estado-vazio" id="msg-sem-dados-equip">
+          Os dados do relatório de equipamentos serão exibidos aqui quando a Etapa 08 for implementada.
+        </p>
+
+        <div class="tabela-wrapper" id="wrapper-rel-equipamentos" hidden>
+          <table id="tabela-rel-equipamentos">
+            <thead>
+              <tr>
+                <th scope="col">Patrimônio</th>
+                <th scope="col">Equipamento</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Localização</th>
+                <th scope="col">Aquisição</th>
+                <th scope="col">Garantia até</th>
+                <th scope="col">Situação</th>
+              </tr>
+            </thead>
+            <tbody id="corpo-rel-equipamentos">
+              <!-- Linhas inseridas pelo JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- SEÇÃO: Relatório de manutenções                                   -->
+      <!-- ================================================================ -->
+      <section id="relatorio-manutencoes" aria-labelledby="titulo-rel-manut">
+        <h3 id="titulo-rel-manut">Manutenções</h3>
+        <p class="secao-descricao">
+          Visão geral das manutenções por situação, prioridade e equipamento.
+        </p>
+
+        <p class="estado-vazio" id="msg-sem-dados-manut">
+          Os dados do relatório de manutenções serão exibidos aqui quando a Etapa 08 for implementada.
+        </p>
+
+        <div class="tabela-wrapper" id="wrapper-rel-manutencoes" hidden>
+          <table id="tabela-rel-manutencoes">
+            <thead>
+              <tr>
+                <th scope="col">Equipamento</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Prioridade</th>
+                <th scope="col">Técnico</th>
+                <th scope="col">Prazo</th>
+                <th scope="col">Situação</th>
+              </tr>
+            </thead>
+            <tbody id="corpo-rel-manutencoes">
+              <!-- Linhas inseridas pelo JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- SEÇÃO: Relatório de custos                                        -->
+      <!-- ================================================================ -->
+      <section id="relatorio-custos" aria-labelledby="titulo-rel-custos">
+        <h3 id="titulo-rel-custos">Custos de manutenção</h3>
+        <p class="secao-descricao">
+          Resumo dos custos registrados nas ordens de manutenção.
+        </p>
+
+        <p class="estado-vazio" id="msg-sem-dados-custos">
+          Os dados do relatório de custos serão exibidos aqui quando a Etapa 08 for implementada.
+        </p>
+
+        <div class="tabela-wrapper" id="wrapper-rel-custos" hidden>
+          <table id="tabela-rel-custos">
+            <thead>
+              <tr>
+                <th scope="col">Equipamento</th>
+                <th scope="col">Descrição</th>
+                <th scope="col">Conclusão</th>
+                <th scope="col">Custo</th>
+              </tr>
+            </thead>
+            <tbody id="corpo-rel-custos">
+              <!-- Linhas inseridas pelo JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- SEÇÃO: Relatório de garantias                                     -->
+      <!-- ================================================================ -->
+      <section id="relatorio-garantias" aria-labelledby="titulo-rel-garantias">
+        <h3 id="titulo-rel-garantias">Garantias</h3>
+        <p class="secao-descricao">
+          Situação das garantias dos equipamentos: vencidas, próximas do vencimento (30 dias) e vigentes.
+        </p>
+
+        <p class="estado-vazio" id="msg-sem-dados-garantias">
+          Os dados do relatório de garantias serão exibidos aqui quando a Etapa 08 for implementada.
+        </p>
+
+        <div class="tabela-wrapper" id="wrapper-rel-garantias" hidden>
+          <table id="tabela-rel-garantias">
+            <thead>
+              <tr>
+                <th scope="col">Patrimônio</th>
+                <th scope="col">Equipamento</th>
+                <th scope="col">Garantia até</th>
+                <th scope="col">Situação da garantia</th>
+              </tr>
+            </thead>
+            <tbody id="corpo-rel-garantias">
+              <!-- Linhas inseridas pelo JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- SEÇÃO: Backup e restauração                                       -->
+      <!-- ================================================================ -->
+      <section id="secao-backup" aria-labelledby="titulo-backup">
+        <h3 id="titulo-backup">Backup e restauração</h3>
+        <p class="secao-descricao">
+          Exporte todos os dados do sistema em formato JSON para fazer um backup,
+          ou importe um arquivo de backup para restaurar os dados.
+          A importação valida o arquivo antes de substituir qualquer dado existente.
+        </p>
+
+        <p class="estado-vazio" id="msg-backup-pendente">
+          As funções de exportação e importação de dados serão implementadas na Etapa 08.
+        </p>
+
+        <!-- Área de exportação — botão e link de download serão ativados pelo relatorios.js -->
+        <div id="area-exportacao" hidden>
+          <h4>Exportar dados</h4>
+          <p>Gera um arquivo <code>techtrack-backup.json</code> com todos os dados atuais do sistema.</p>
+          <button type="button" id="btn-exportar" disabled>Exportar backup</button>
+        </div>
+
+        <!-- Área de importação — campo de arquivo será ativado pelo relatorios.js -->
+        <div id="area-importacao" hidden>
+          <h4>Importar dados</h4>
+          <p>
+            Selecione um arquivo de backup gerado pelo TechTrack.
+            O sistema validará o arquivo antes de qualquer alteração.
+            Os dados atuais serão preservados caso o arquivo seja inválido.
+          </p>
+          <label for="campo-arquivo-backup">Arquivo de backup (.json)</label>
+          <input type="file" id="campo-arquivo-backup" accept=".json" disabled>
+          <button type="button" id="btn-importar" disabled>Importar backup</button>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="pagina-rodape">
+      <p>TechTrack &mdash; Projeto acadêmico UTFPR &mdash; Desenvolvimento Web</p>
+    </footer>
+
+  </div><!-- fim .pagina-wrapper -->
+
+  <script src="js/armazenamento.js" defer></script>
+  <script src="js/dados.js" defer></script>
+  <script src="js/funcoes.js" defer></script>
+  <script src="js/relatorios.js" defer></script>
+</body>
+</html>

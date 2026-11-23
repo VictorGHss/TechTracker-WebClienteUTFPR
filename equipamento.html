@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TechTrack — Detalhes, histórico e manutenções de um equipamento.">
+  <title>Detalhes do equipamento — TechTrack</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navegação lateral principal -->
+  <!-- Equipamentos marcado como ativo pois esta página faz parte dessa seção -->
+  <nav id="nav-principal" aria-label="Navegação principal">
+    <header class="nav-cabecalho">
+      <h1 class="nav-logo">TechTrack</h1>
+      <p class="nav-subtitulo">Gestão de TI</p>
+    </header>
+
+    <ul class="nav-lista">
+      <li class="nav-item">
+        <a href="index.html" class="nav-link">
+          Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <!-- aria-current="page" aplicado aqui pois esta página pertence à seção Equipamentos -->
+        <a href="equipamentos.html" class="nav-link" aria-current="page">
+          Equipamentos
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="manutencoes.html" class="nav-link">
+          Manutenções
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="cadastros.html" class="nav-link">
+          Cadastros
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="relatorios.html" class="nav-link">
+          Relatórios
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Área principal da página -->
+  <div class="pagina-wrapper">
+
+    <header class="pagina-cabecalho">
+      <nav aria-label="Caminho de navegação">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="equipamentos.html">Equipamentos</a>
+          </li>
+          <li class="breadcrumb-item breadcrumb-atual" aria-current="location">
+            Detalhes
+          </li>
+        </ol>
+      </nav>
+
+      <h2 class="pagina-titulo" id="titulo-equipamento">Detalhes do equipamento</h2>
+    </header>
+
+    <main id="conteudo-principal">
+
+      <!-- Mensagem de estado inicial — exibida quando nenhum equipamento está selecionado -->
+      <section id="msg-selecionar-equipamento" aria-labelledby="titulo-selecionar">
+        <h3 id="titulo-selecionar" class="sr-only">Instruções</h3>
+        <p class="estado-vazio">
+          Nenhum equipamento selecionado.
+          <a href="equipamentos.html">Acesse a listagem</a> e clique em um equipamento para ver seus detalhes.
+        </p>
+      </section>
+
+      <!-- Conteúdo dos detalhes — exibido pelo equipamentos.js quando um equipamento for carregado -->
+      <article id="detalhes-equipamento" aria-labelledby="titulo-equipamento" hidden>
+
+        <!-- Identificação -->
+        <section id="secao-identificacao" aria-labelledby="titulo-identificacao">
+          <h3 id="titulo-identificacao">Identificação</h3>
+
+          <dl class="lista-dados">
+            <dt>Patrimônio</dt>
+            <dd id="dado-patrimonio">—</dd>
+
+            <dt>Fabricante</dt>
+            <dd id="dado-fabricante">—</dd>
+
+            <dt>Modelo</dt>
+            <dd id="dado-modelo">—</dd>
+
+            <dt>Categoria</dt>
+            <dd id="dado-categoria">—</dd>
+
+            <dt>Número de série</dt>
+            <dd id="dado-numero-serie">—</dd>
+          </dl>
+        </section>
+
+        <!-- Localização -->
+        <section id="secao-localizacao" aria-labelledby="titulo-localizacao">
+          <h3 id="titulo-localizacao">Localização</h3>
+
+          <dl class="lista-dados">
+            <dt>Local atual</dt>
+            <dd id="dado-local">—</dd>
+          </dl>
+        </section>
+
+        <!-- Situação -->
+        <section id="secao-situacao" aria-labelledby="titulo-situacao">
+          <h3 id="titulo-situacao">Situação</h3>
+
+          <dl class="lista-dados">
+            <dt>Situação administrativa</dt>
+            <dd id="dado-situacao-administrativa">—</dd>
+
+            <dt>Situação operacional</dt>
+            <dd id="dado-situacao-operacional">—</dd>
+
+            <dt>Data de aquisição</dt>
+            <dd id="dado-data-aquisicao">—</dd>
+
+            <dt>Garantia até</dt>
+            <dd id="dado-data-garantia">—</dd>
+          </dl>
+        </section>
+
+        <!-- Manutenções relacionadas -->
+        <section id="secao-manutencoes" aria-labelledby="titulo-manut-equip">
+          <h3 id="titulo-manut-equip">Manutenções</h3>
+
+          <p class="estado-vazio" id="msg-sem-manutencoes-equip">
+            Nenhuma manutenção registrada para este equipamento.
+          </p>
+
+          <div class="tabela-wrapper" id="wrapper-tabela-manutencoes-equip" hidden>
+            <table id="tabela-manutencoes-equip">
+              <thead>
+                <tr>
+                  <th scope="col">Tipo</th>
+                  <th scope="col">Descrição</th>
+                  <th scope="col">Técnico</th>
+                  <th scope="col">Prazo</th>
+                  <th scope="col">Situação</th>
+                </tr>
+              </thead>
+              <tbody id="corpo-tabela-manutencoes-equip">
+                <!-- Linhas inseridas pelo JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Histórico do equipamento -->
+        <section id="secao-historico" aria-labelledby="titulo-historico-equip">
+          <h3 id="titulo-historico-equip">Histórico</h3>
+
+          <p class="estado-vazio" id="msg-sem-historico-equip">
+            Nenhum evento registrado para este equipamento.
+          </p>
+
+          <ul class="lista-eventos" id="lista-historico-equip" aria-live="polite">
+            <!-- Eventos inseridos pelo JavaScript -->
+          </ul>
+        </section>
+
+      </article><!-- fim #detalhes-equipamento -->
+
+    </main>
+
+    <footer class="pagina-rodape">
+      <p>TechTrack &mdash; Projeto acadêmico UTFPR &mdash; Desenvolvimento Web</p>
+    </footer>
+
+  </div><!-- fim .pagina-wrapper -->
+
+  <script src="js/armazenamento.js" defer></script>
+  <script src="js/dados.js" defer></script>
+  <script src="js/funcoes.js" defer></script>
+  <script src="js/equipamentos.js" defer></script>
+</body>
+</html>

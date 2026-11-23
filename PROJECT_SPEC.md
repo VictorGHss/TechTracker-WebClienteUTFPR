@@ -527,21 +527,36 @@ techtrack:data:v1
 
 ## 18. Roadmap
 
-| Etapa | Descrição                                  | Situação       |
-|-------|--------------------------------------------|----------------|
-| 00    | Fundação e documentação                    | ✅ Concluída    |
-| 00.1  | Alinhamento documental                     | ✅ Concluída    |
-| 01    | Estrutura HTML e navegação                 | 🔧 Pendente    |
-| 02    | Identidade visual e CSS responsivo         | 🔧 Pendente    |
-| 03    | Modelagem de dados e localStorage          | 🔧 Pendente    |
-| 04    | CRUD de equipamentos                       | 🔧 Pendente    |
-| 05    | CRUD de locais e técnicos                  | 🔧 Pendente    |
-| 06    | CRUD de manutenções                        | 🔧 Pendente    |
-| 07    | Dashboard e histórico                      | 🔧 Pendente    |
-| 08    | Relatórios e backup                        | 🔧 Pendente    |
-| 09    | QR Code e etiquetas                        | 🔧 Pendente    |
-| 10    | Testes, refinamento e preparação da apresentação | 🔧 Pendente |
+| Etapa | Descrição                                        | Situação       |
+|-------|--------------------------------------------------|----------------|
+| 00    | Fundação e documentação                          | ✅ Concluída    |
+| 00.1  | Alinhamento documental                           | ✅ Concluída    |
+| 01    | Estrutura HTML e navegação                       | ✅ Concluída    |
+| 02    | Identidade visual e CSS responsivo               | 🔧 Pendente    |
+| 03    | Modelagem de dados e localStorage                | 🔧 Pendente    |
+| 04    | CRUD de equipamentos                             | 🔧 Pendente    |
+| 05    | CRUD de locais e técnicos                        | 🔧 Pendente    |
+| 06    | CRUD de manutenções                              | 🔧 Pendente    |
+| 07    | Dashboard e histórico                            | 🔧 Pendente    |
+| 08    | Relatórios e backup                              | 🔧 Pendente    |
+| 09    | QR Code e etiquetas                              | 🔧 Pendente    |
+| 10    | Testes, refinamento e preparação da apresentação | 🔧 Pendente    |
 
 ---
 
-*Última atualização: Etapa 00.1 — Alinhamento documental.*
+## 19. Notas técnicas da Etapa 01
+
+### Servidor estático local
+
+As páginas HTML referenciam arquivos em `css/style.css` e `js/*.js` que ainda não existem (criados nas etapas 02 e 03). Para executar o projeto durante o desenvolvimento, recomenda-se um servidor estático local como a extensão **Live Server** do VS Code.
+
+Um servidor estático apenas serve arquivos do disco para o navegador — não processa dados, não conecta a banco de dados e não representa um backend ou servidor de aplicação. O TechTrack continua sendo 100% frontend: todo o processamento acontece no navegador.
+
+### Decisões técnicas da Etapa 01
+
+- **Formulários com `disabled`:** os campos e botões de formulário foram incluídos na estrutura HTML com o atributo `disabled`. Isso deixa a estrutura preparada para as etapas de CRUD sem criar a falsa impressão de que funcionam agora.
+- **Tabelas com `hidden`:** as tabelas de dados ficam ocultas por padrão (`hidden`). O estado vazio (`<p class="estado-vazio">`) é exibido enquanto não há dados. O JavaScript alternará entre os dois conforme necessário.
+- **`aria-current="page"` em `equipamento.html`:** esta página pertence à seção Equipamentos, então o item Equipamentos recebe `aria-current="page"` na navegação. A localização exata é indicada pelo breadcrumb com `aria-current="location"`.
+- **Scripts com `defer`:** todos os arquivos JavaScript são carregados com `defer`, o que garante que o HTML esteja completamente parseado antes da execução dos scripts.
+
+*Última atualização: Etapa 01 — Estrutura HTML e navegação.*

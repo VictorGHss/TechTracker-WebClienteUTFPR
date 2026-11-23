@@ -85,7 +85,7 @@ TechTrack/
 |-------|--------------------------------------------------|----------------|
 | 00    | Fundação e documentação                          | ✅ Concluída    |
 | 00.1  | Alinhamento documental                           | ✅ Concluída    |
-| 01    | Estrutura HTML e navegação                       | 🔧 Pendente    |
+| 01    | Estrutura HTML e navegação                       | ✅ Concluída    |
 | 02    | Identidade visual e CSS responsivo               | 🔧 Pendente    |
 | 03    | Modelagem de dados e localStorage                | 🔧 Pendente    |
 | 04    | CRUD de equipamentos                             | 🔧 Pendente    |
@@ -112,6 +112,8 @@ A forma recomendada é usar um servidor estático local, como a extensão **Live
 > O Live Server apenas serve os arquivos para o navegador. Ele não representa um backend nem processa dados. O TechTrack continua sendo 100% frontend.
 
 A abertura direta via `file://` (clicando duas vezes no arquivo) pode funcionar na maioria dos navegadores, mas o comportamento do localStorage pode variar. Recomenda-se o servidor estático local para evitar inconsistências.
+
+> **Nota:** nas etapas atuais, as páginas HTML existem mas o CSS e o JavaScript ainda não foram criados. A aparência e as funcionalidades serão adicionadas nas etapas 02 em diante.
 
 ---
 

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TechTrack — Gerenciamento de locais e técnicos responsáveis.">
+  <title>Cadastros — TechTrack</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navegação lateral principal -->
+  <nav id="nav-principal" aria-label="Navegação principal">
+    <header class="nav-cabecalho">
+      <h1 class="nav-logo">TechTrack</h1>
+      <p class="nav-subtitulo">Gestão de TI</p>
+    </header>
+
+    <ul class="nav-lista">
+      <li class="nav-item">
+        <a href="index.html" class="nav-link">
+          Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="equipamentos.html" class="nav-link">
+          Equipamentos
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="manutencoes.html" class="nav-link">
+          Manutenções
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="cadastros.html" class="nav-link" aria-current="page">
+          Cadastros
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="relatorios.html" class="nav-link">
+          Relatórios
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Área principal da página -->
+  <div class="pagina-wrapper">
+
+    <header class="pagina-cabecalho">
+      <h2 class="pagina-titulo">Cadastros auxiliares</h2>
+      <p class="pagina-descricao">Gerenciamento de locais e técnicos responsáveis utilizados no sistema.</p>
+    </header>
+
+    <main id="conteudo-principal">
+
+      <!-- ================================================================ -->
+      <!-- SEÇÃO: Locais                                                     -->
+      <!-- ================================================================ -->
+      <section id="secao-locais" aria-labelledby="titulo-locais">
+        <h3 id="titulo-locais">Locais</h3>
+        <p class="secao-descricao">
+          Locais onde os equipamentos estão instalados ou armazenados.
+          Cada equipamento deve estar associado a um local cadastrado.
+        </p>
+
+        <!-- Ações da seção de locais -->
+        <div class="secao-acoes">
+          <!-- Botão sem comportamento nesta etapa — JavaScript será adicionado na Etapa 05 -->
+          <button type="button" id="btn-novo-local" disabled>
+            Novo local
+          </button>
+        </div>
+
+        <!-- Estado vazio -->
+        <p class="estado-vazio" id="msg-sem-locais">
+          Nenhum local cadastrado. Os locais aparecerão nesta tabela após o cadastro.
+        </p>
+
+        <!-- Tabela de locais — será preenchida e exibida pelo cadastros.js -->
+        <div class="tabela-wrapper" id="wrapper-tabela-locais" hidden>
+          <table id="tabela-locais">
+            <thead>
+              <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Descrição</th>
+                <th scope="col">Equipamentos</th>
+                <th scope="col">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="corpo-tabela-locais">
+              <!-- Linhas inseridas pelo JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Painel de formulário de local — controlado pelo cadastros.js na Etapa 05 -->
+        <section id="painel-formulario-local" aria-labelledby="titulo-form-local" hidden>
+          <h4 id="titulo-form-local">Cadastrar local</h4>
+          <p>O formulário de locais será implementado na Etapa 05.</p>
+        </section>
+      </section>
+
+      <!-- ================================================================ -->
+      <!-- SEÇÃO: Técnicos                                                   -->
+      <!-- ================================================================ -->
+      <section id="secao-tecnicos" aria-labelledby="titulo-tecnicos">
+        <h3 id="titulo-tecnicos">Técnicos responsáveis</h3>
+        <p class="secao-descricao">
+          Técnicos que podem ser atribuídos às ordens de manutenção.
+          Somente técnicos ativos podem receber novas manutenções.
+        </p>
+
+        <!-- Ações da seção de técnicos -->
+        <div class="secao-acoes">
+          <!-- Botão sem comportamento nesta etapa — JavaScript será adicionado na Etapa 05 -->
+          <button type="button" id="btn-novo-tecnico" disabled>
+            Novo técnico
+          </button>
+        </div>
+
+        <!-- Estado vazio -->
+        <p class="estado-vazio" id="msg-sem-tecnicos">
+          Nenhum técnico cadastrado. Os técnicos aparecerão nesta tabela após o cadastro.
+        </p>
+
+        <!-- Tabela de técnicos — será preenchida e exibida pelo cadastros.js -->
+        <div class="tabela-wrapper" id="wrapper-tabela-tecnicos" hidden>
+          <table id="tabela-tecnicos">
+            <thead>
+              <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Contato</th>
+                <th scope="col">Situação</th>
+                <th scope="col">Manutenções</th>
+                <th scope="col">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="corpo-tabela-tecnicos">
+              <!-- Linhas inseridas pelo JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Painel de formulário de técnico — controlado pelo cadastros.js na Etapa 05 -->
+        <section id="painel-formulario-tecnico" aria-labelledby="titulo-form-tecnico" hidden>
+          <h4 id="titulo-form-tecnico">Cadastrar técnico</h4>
+          <p>O formulário de técnicos será implementado na Etapa 05.</p>
+        </section>
+      </section>
+
+    </main>
+
+    <footer class="pagina-rodape">
+      <p>TechTrack &mdash; Projeto acadêmico UTFPR &mdash; Desenvolvimento Web</p>
+    </footer>
+
+  </div><!-- fim .pagina-wrapper -->
+
+  <script src="js/armazenamento.js" defer></script>
+  <script src="js/dados.js" defer></script>
+  <script src="js/funcoes.js" defer></script>
+  <script src="js/cadastros.js" defer></script>
+</body>
+</html>

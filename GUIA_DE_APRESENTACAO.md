@@ -139,33 +139,155 @@ Esta seção mostra como cada conteúdo estudado na disciplina aparece no projet
 
 ## 6. Explicação das funcionalidades
 
-🔧 *Esta seção será preenchida conforme as funcionalidades forem implementadas. Para cada uma, serão explicados: o que faz, como funciona por dentro e como demonstrar ao professor.*
+### 6.1 Estrutura HTML e navegação ✅ Etapa 01
 
-### 6.1 Dashboard
+#### O que é HTML semântico?
+
+HTML semântico significa usar o elemento certo para cada finalidade. O HTML tem elementos que descrevem o significado do conteúdo, não apenas a aparência. Isso ajuda o navegador, leitores de tela e outros desenvolvedores a entenderem para que serve cada parte da página.
+
+Comparação:
+
+```html
+<!-- Sem semântica: só diz que é um bloco -->
+<div class="cabecalho">...</div>
+
+<!-- Com semântica: diz exatamente que é um cabeçalho -->
+<header>...</header>
+```
+
+#### Os elementos semânticos do TechTrack
+
+Todas as páginas do projeto compartilham a mesma estrutura básica:
+
+```html
+<nav>      <!-- Navegação lateral: links para as páginas do sistema -->
+<header>   <!-- Cabeçalho da página: título e descrição da seção -->
+<main>     <!-- Conteúdo principal: tabelas, formulários, indicadores -->
+<section>  <!-- Seção dentro do main: agrupa conteúdo relacionado -->
+<footer>   <!-- Rodapé: informação institucional do projeto -->
+```
+
+**Por que não usar `<div>` para tudo?**
+`<div>` é genérico — não diz nada sobre o conteúdo. `<nav>` diz que é uma área de navegação. `<main>` diz que é o conteúdo principal. Usar o elemento certo é uma boa prática que torna o código mais legível e mais acessível.
+
+#### Como a navegação foi implementada
+
+A navegação é um elemento `<nav>` com uma lista `<ul>` de links. Em vez de repetir código diferente em cada página, todas as páginas compartilham exatamente a mesma estrutura de navegação. O link da página atual recebe o atributo `aria-current="page"`, que indica para leitores de tela que aquele item corresponde à página em que o usuário está.
+
+Trecho real do `index.html`:
+
+```html
+<nav id="nav-principal" aria-label="Navegação principal">
+  <ul class="nav-lista">
+    <li class="nav-item">
+      <a href="index.html" class="nav-link" aria-current="page">
+        Dashboard
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="equipamentos.html" class="nav-link">
+        Equipamentos
+      </a>
+    </li>
+    <!-- ... demais links ... -->
+  </ul>
+</nav>
+```
+
+**O que é `aria-current="page"`?**
+É um atributo de acessibilidade. `aria` significa *Accessible Rich Internet Applications*. O valor `"page"` indica que aquele link aponta para a página atual. O CSS usará isso na próxima etapa para destacar visualmente o item ativo.
+
+#### Como funcionam os links entre páginas
+
+O TechTrack usa múltiplas páginas HTML. Navegar entre elas é simples: cada link `<a href="...">` aponta para o arquivo HTML correspondente. Os caminhos são relativos — não precisam de servidor nem de endereço absoluto.
+
+```html
+<!-- Da index.html para a página de equipamentos -->
+<a href="equipamentos.html">Equipamentos</a>
+
+<!-- Da equipamentos.html de volta para a index -->
+<a href="index.html">Dashboard</a>
+```
+
+Quando o usuário clica em um link, o navegador carrega o arquivo HTML correspondente do mesmo diretório.
+
+#### Tabelas HTML
+
+As páginas de listagem (equipamentos, manutenções, locais, técnicos) usam tabelas para exibir os dados. Uma tabela HTML bem estruturada tem:
+
+- `<table>`: o elemento raiz da tabela
+- `<thead>`: agrupa a linha de cabeçalho
+- `<tbody>`: agrupa as linhas de dados
+- `<tr>`: uma linha da tabela
+- `<th scope="col">`: célula de cabeçalho de coluna
+- `<td>`: célula de dado
+
+Trecho real do `equipamentos.html`:
+
+```html
+<table id="tabela-equipamentos">
+  <thead>
+    <tr>
+      <th scope="col">Patrimônio</th>
+      <th scope="col">Equipamento</th>
+      <th scope="col">Categoria</th>
+      <th scope="col">Localização</th>
+      <th scope="col">Situação</th>
+      <th scope="col">Ações</th>
+    </tr>
+  </thead>
+  <tbody id="corpo-tabela-equipamentos">
+    <!-- Linhas inseridas pelo JavaScript -->
+  </tbody>
+</table>
+```
+
+**Por que `scope="col"`?** Indica que aquele `<th>` é o cabeçalho de uma coluna. Isso ajuda leitores de tela a relacionar cada célula de dado com seu cabeçalho correto.
+
+#### Por que usar múltiplas páginas?
+
+O TechTrack é uma MPA — *Multi-Page Application*. Cada funcionalidade tem sua própria página HTML. Isso é mais próximo do modelo que foi estudado na disciplina: cada arquivo HTML é uma página completa, com seu próprio cabeçalho, conteúdo e rodapé. O navegador carrega uma nova página a cada navegação.
+
+A alternativa seria uma SPA (*Single-Page Application*), onde há apenas um HTML e o JavaScript troca o conteúdo sem recarregar. Isso exigiria mais JavaScript e seria mais difícil de explicar para a disciplina.
+
+#### Conteúdo das aulas relacionado (aulas 2 e 3)
+
+| Conceito da aula                   | Onde aparece no TechTrack                            |
+|------------------------------------|------------------------------------------------------|
+| Elementos textuais (h1–h3, p)      | Títulos das páginas, descrições das seções           |
+| Elementos estruturais (header, nav, main, footer) | Estrutura de todas as 6 páginas       |
+| Listas (ul, li)                    | Navegação, indicadores do dashboard, histórico       |
+| Tabelas (table, thead, tbody, th)  | Equipamentos, manutenções, locais, técnicos          |
+| Formulários (input, select, label) | Campos de busca e filtros (preparados, ainda inativos)|
+| Atributos de acessibilidade        | `aria-label`, `aria-current`, `aria-labelledby`      |
+
+---
+
+### 6.2 Dashboard
 
 *A ser preenchido na etapa 07 — Dashboard e histórico.*
 
-### 6.2 Equipamentos
+### 6.3 Equipamentos
 
 *A ser preenchido na etapa 04 — CRUD de equipamentos.*
 
-### 6.3 Manutenções
+### 6.4 Manutenções
 
 *A ser preenchido na etapa 06 — CRUD de manutenções.*
 
-### 6.4 Locais e Técnicos
+### 6.5 Locais e Técnicos
 
 *A ser preenchido na etapa 05 — CRUD de locais e técnicos.*
 
-### 6.5 Histórico
+### 6.6 Histórico
 
 *A ser preenchido na etapa 07 — Dashboard e histórico.*
 
-### 6.6 Relatórios e Backup
+### 6.7 Relatórios e Backup
 
 *A ser preenchido na etapa 08 — Relatórios e backup.*
 
-### 6.7 QR Code
+### 6.8 QR Code
 
 *A ser preenchido na etapa 09 — QR Code e etiquetas.*
 
@@ -409,7 +531,7 @@ Usar Bootstrap ou Tailwind geraria o estilo automaticamente, mas o código CSS r
 |-------|--------------------------------------------------|----------------|
 | 00    | Fundação e documentação                          | ✅ Concluída    |
 | 00.1  | Alinhamento documental                           | ✅ Concluída    |
-| 01    | Estrutura HTML e navegação                       | 🔧 Pendente    |
+| 01    | Estrutura HTML e navegação                       | ✅ Concluída    |
 | 02    | Identidade visual e CSS responsivo               | 🔧 Pendente    |
 | 03    | Modelagem de dados e localStorage                | 🔧 Pendente    |
 | 04    | CRUD de equipamentos                             | 🔧 Pendente    |
@@ -422,5 +544,5 @@ Usar Bootstrap ou Tailwind geraria o estilo automaticamente, mas o código CSS r
 
 ---
 
-*Última atualização: Etapa 00.1 — Alinhamento documental.*
+*Última atualização: Etapa 01 — Estrutura HTML e navegação.*
 *Este documento será expandido a cada etapa de implementação.*
