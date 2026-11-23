@@ -322,10 +322,12 @@ ol {
   box-shadow: var(--sombra-card);
 }
 
-/* Grade de cards dentro da seção */
+/* Grade de cards dentro da seção
+   auto-fit: colapsa colunas vazias, mantendo os cards compactos e agrupados
+   minmax(140px, 220px): mínimo de 140px, máximo de 220px por card */
 .lista-indicadores {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 220px));
   gap: var(--espaco-md);
   list-style: none;
 }
@@ -425,6 +427,21 @@ ol {
   min-width: 220px;
 }
 
+/* Filtros em grid: cada .campo-filtro ocupa uma coluna de tamanho igual */
+.acoes-filtros {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(130px, 1fr));
+  align-items: end;
+  flex: 2;
+}
+
+/* Agrupamento individual de label + select dentro dos filtros */
+.campo-filtro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+}
+
 .acoes-botoes {
   display: flex;
   align-items: flex-end;
@@ -481,14 +498,24 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-/* Campos e controles desabilitados — claramente não interativos */
+/* Campos e controles desabilitados — claramente não interativos,
+   mas com texto legível (evitar opacidade tão baixa que dificulte leitura) */
 input:disabled,
 select:disabled,
-textarea:disabled,
-button:disabled {
-  opacity: 0.45;
+textarea:disabled {
+  opacity: 1;
   cursor: not-allowed;
-  background-color: var(--cor-fundo);
+  background-color: #F1F5F9;
+  color: var(--cor-texto-sec);
+  border-color: #CBD5E1;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background-color: #94A3B8;
+  border-color: #94A3B8;
+  color: #FFFFFF;
 }
 
 /* Botões */
@@ -818,7 +845,12 @@ tbody tr:hover {
   }
 
   .lista-indicadores {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(120px, 200px));
+  }
+
+  /* Filtros em tablet: 2 colunas para economizar espaço */
+  .acoes-filtros {
+    grid-template-columns: repeat(2, minmax(110px, 1fr));
   }
 
   .lista-dados {
@@ -925,6 +957,11 @@ tbody tr:hover {
     flex-direction: column;
   }
 
+  /* Filtros em duas colunas no mobile */
+  .acoes-filtros {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .acoes-botoes {
     margin-left: 0;
   }
@@ -961,6 +998,11 @@ tbody tr:hover {
 
 @media (max-width: 400px) {
   .lista-indicadores {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Filtros em coluna única em telas muito pequenas */
+  .acoes-filtros {
     grid-template-columns: 1fr;
   }
 

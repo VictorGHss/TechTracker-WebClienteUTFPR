@@ -597,7 +597,11 @@ TechTrack/
 - **Alertas em amarelo suave** (`#FFFBEB`): diferenciação visual das manutenções atrasadas e garantias vencendo.
 - **Badges de situação e prioridade** preparados para uso pelo JavaScript nas etapas futuras (`.badge-operacional`, `.badge-critica` etc.).
 - **Tabelas com rolagem horizontal interna** via `.tabela-wrapper { overflow-x: auto }`: evita quebra de layout em telas pequenas.
-- **`[hidden]` com `!important`**: garante que elementos ocultos permaneçam assim mesmo com outras regras CSS de exibição.
+### Ajustes da Etapa 02.1
+
+- **`.lista-indicadores`:** alterado de `auto-fill` para `auto-fit` com `minmax(140px, 220px)`. Com `auto-fit` colunas vazias são colapsadas, mantendo os cards agrupados à esquerda sem ocupar toda a largura disponível.
+- **`.campo-filtro`:** criado agrupamento individual para cada par label+select nos filtros de equipamentos. `.acoes-filtros` passou de Flexbox para Grid de 3 colunas no desktop, 2 no tablet e 1 no mobile pequeno.
+- **`:disabled`:** separados `input/select:disabled` (opacity 1, fundo cinza claro, texto secundário) de `button:disabled` (opacity 0.55, fundo cinza médio). O texto permanece legível em ambos os casos.
 
 ### Breakpoints implementados
 

@@ -450,7 +450,54 @@ No HTML, cada elemento recebe um `class` ou `id`. No CSS, escrevemos regras que 
 }
 ```
 
-#### Conteúdo das aulas relacionado (aulas 4, 5.1, 5.2 e 6)
+#### Agrupamento dos filtros com `.campo-filtro`
+
+Para que label e select de cada filtro se comportem como uma unidade, o HTML de `equipamentos.html` usa uma `<div class="campo-filtro">` em volta de cada par:
+
+```html
+<div class="acoes-filtros">
+  <div class="campo-filtro">
+    <label for="filtro-categoria">Categoria</label>
+    <select id="filtro-categoria" disabled>...</select>
+  </div>
+  <div class="campo-filtro">
+    <label for="filtro-situacao">Situação</label>
+    <select id="filtro-situacao" disabled>...</select>
+  </div>
+  <div class="campo-filtro">
+    <label for="filtro-local">Localização</label>
+    <select id="filtro-local" disabled>...</select>
+  </div>
+</div>
+```
+
+```css
+/* Três filtros em colunas iguais no desktop */
+.acoes-filtros {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(130px, 1fr));
+}
+
+/* Cada .campo-filtro empilha label e select em coluna */
+.campo-filtro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+}
+```
+
+#### `auto-fit` nos cards do dashboard
+
+```css
+/* auto-fit colapsa colunas vazias, mantendo os cards agrupados à esquerda */
+.lista-indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 220px));
+  gap: var(--espaco-md);
+}
+```
+
+**Diferença entre `auto-fill` e `auto-fit`:** `auto-fill` cria colunas vazias mesmo sem conteúdo, esticando os cards. `auto-fit` colapsa as colunas extras, deixando os cards com tamanho máximo de 220px e agrupados à esquerda.
 
 | Conceito da aula | Onde aparece no TechTrack |
 |---|---|
@@ -740,5 +787,5 @@ Usar Bootstrap ou Tailwind geraria o estilo automaticamente, mas o código CSS r
 
 ---
 
-*Última atualização: Etapa 02 — Identidade visual e CSS responsivo.*
+*Última atualização: Etapa 02.1 — Refinamento visual.*
 *Este documento será expandido a cada etapa de implementação.*
