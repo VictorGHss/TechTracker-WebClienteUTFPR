@@ -998,7 +998,7 @@ tbody tr:hover {
 
 @media (max-width: 400px) {
   .lista-indicadores {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 
   /* Filtros em coluna única em telas muito pequenas */
