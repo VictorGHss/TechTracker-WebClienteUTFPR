@@ -34,7 +34,7 @@ Pequenas e médias empresas frequentemente controlam seus ativos de TI em planil
 - Gerenciamento de locais e técnicos responsáveis.
 - Histórico automático de eventos relevantes.
 - Relatórios e indicadores calculados a partir dos dados.
-- Exportação e importação de dados via JSON.
+- Exportação e importação de dados via JSON (backup).
 - Geração de QR Code para etiquetas de equipamentos.
 
 ### Fora do escopo
@@ -50,7 +50,40 @@ Pequenas e médias empresas frequentemente controlam seus ativos de TI em planil
 
 ## 5. Funcionalidades
 
-### 5.1 Dashboard
+As funcionalidades estão organizadas em três níveis de prioridade.
+
+### Essenciais
+
+- Dashboard com indicadores básicos.
+- CRUD completo de equipamentos (cadastro, edição, exclusão e detalhes).
+- CRUD completo de manutenções.
+- CRUD de locais.
+- CRUD de técnicos responsáveis.
+- Relacionamentos entre as entidades.
+- Validação dos formulários.
+- Pesquisa e filtros nas listagens.
+- Persistência em localStorage.
+- Histórico automático dos principais eventos.
+
+### Complementares
+
+- Relatórios tabulares (inventário, categorias, localizações, manutenções, custos, garantias).
+- Alertas de garantia próxima do vencimento e manutenção atrasada.
+- Backup: exportação e importação de dados em JSON.
+- Indicadores adicionais no dashboard.
+
+### Adicionais
+
+- Geração de QR Code individual para equipamentos.
+- Download e impressão de etiquetas.
+
+As funcionalidades adicionais não devem atrasar a conclusão das essenciais.
+
+---
+
+### Detalhamento das funcionalidades
+
+#### 5.1 Dashboard (`index.html`)
 
 - Contador de equipamentos totais.
 - Contador de equipamentos operacionais.
@@ -60,36 +93,40 @@ Pequenas e médias empresas frequentemente controlam seus ativos de TI em planil
 - Contador de garantias próximas do vencimento (critério: 30 dias).
 - Lista de atividades recentes (últimos eventos do histórico).
 
-Todos os indicadores são calculados dinamicamente a partir dos dados armazenados.
+Todos os indicadores são calculados dinamicamente a partir dos dados armazenados. Nenhum valor é guardado separadamente no localStorage.
 
-### 5.2 Equipamentos
+#### 5.2 Equipamentos (`equipamentos.html` e `equipamento.html`)
 
 - Cadastro com os campos: patrimônio, categoria, fabricante, modelo, número de série, data de aquisição, data de vencimento da garantia, localização e situação administrativa.
 - Edição dos dados cadastrais.
 - Exclusão com restrição: não permitida se houver manutenções ou histórico vinculado.
 - Pesquisa por texto livre (patrimônio, modelo, fabricante, número de série).
 - Filtros por categoria, localização e situação.
-- Tela de detalhes com dados completos, histórico e manutenções associadas.
+- Página de detalhes com dados completos, histórico do equipamento e manutenções associadas.
 - Situação operacional calculada automaticamente (ver regras de negócio).
+- Formulários embutidos nas próprias páginas — sem páginas separadas para formulários.
 
-### 5.3 Manutenções
+#### 5.3 Manutenções (`manutencoes.html`)
 
-- Cadastro com os campos: equipamento associado, técnico responsável, tipo, prioridade, descrição, prazo e custo estimado.
+- Cadastro com os campos: equipamento associado, técnico responsável, tipo, prioridade, descrição, prazo e custo.
 - Edição dos dados.
 - Transições de estado: aberta → em andamento → concluída / cancelada.
 - Restrições de criação e edição (ver regras de negócio).
+- Formulários embutidos na própria página.
 
-### 5.4 Cadastros Auxiliares
+#### 5.4 Cadastros Auxiliares (`cadastros.html`)
 
-#### Locais
+**Locais:**
 - Cadastro, edição e exclusão de locais.
 - Exclusão restrita quando há equipamentos associados.
 
-#### Técnicos Responsáveis
+**Técnicos:**
 - Cadastro, edição e inativação de técnicos.
 - Exclusão restrita quando há manutenções associadas.
 
-### 5.5 Histórico
+Ambos os cadastros ficam na mesma página, em seções separadas.
+
+#### 5.5 Histórico
 
 - Registro automático dos seguintes eventos:
   - Cadastro de equipamento.
@@ -99,103 +136,105 @@ Todos os indicadores são calculados dinamicamente a partir dos dados armazenado
   - Abertura de manutenção.
   - Conclusão de manutenção.
   - Cancelamento de manutenção.
-- Consulta do histórico geral e por equipamento.
+- O histórico geral aparece como atividades recentes no dashboard.
+- O histórico individual de cada equipamento aparece na página de detalhes.
 
-### 5.6 Relatórios
+#### 5.6 Relatórios e Backup (`relatorios.html`)
 
+**Relatórios:**
 - Inventário completo de equipamentos.
 - Equipamentos por categoria.
 - Equipamentos por localização.
 - Manutenções por situação.
-- Custos de manutenção por período.
-- Relatório de garantias (vencidas, próximas do vencimento e vigentes).
+- Custos de manutenção.
+- Garantias (vencidas, próximas do vencimento e vigentes).
 
-Todos os relatórios são apresentados em tabelas e indicadores numéricos. Gráficos elaborados não são necessários.
+Todos em formato de tabelas e indicadores numéricos. Gráficos elaborados não são necessários.
 
-### 5.7 Backup
-
+**Backup (seção na mesma página):**
 - Exportação de todos os dados em um único arquivo JSON.
 - Importação de arquivo JSON com validação prévia da estrutura.
 - Preservação dos dados atuais em caso de falha na importação.
 - Confirmação explícita antes de substituir os dados existentes.
 
-### 5.8 QR Code
+#### 5.7 QR Code (funcionalidade adicional)
 
-- Geração de QR Code individual para cada equipamento.
+- Geração de QR Code individual para cada equipamento, acessível pela página de detalhes.
 - Exibição do QR Code com dados de identificação do equipamento.
 - Opção de baixar a imagem ou imprimir a etiqueta.
-- Implementado com biblioteca local (sem CDN).
+- Implementado com biblioteca local incorporada (sem CDN).
 
 ---
 
 ## 6. Entidades
 
-### Equipamento (`equipment`)
+### Equipamento
 
-| Campo              | Tipo    | Obrigatório | Descrição                                                   |
-|--------------------|---------|-------------|-------------------------------------------------------------|
-| `id`               | string  | sim         | Identificador único gerado pelo sistema (UUID ou similar)   |
-| `patrimonio`       | string  | sim         | Número de patrimônio — único no sistema                     |
-| `categoria`        | string  | sim         | Categoria do equipamento (ex: desktop, notebook, impressora)|
-| `fabricante`       | string  | sim         | Nome do fabricante                                          |
-| `modelo`           | string  | sim         | Modelo do equipamento                                       |
-| `numeroSerie`      | string  | não         | Número de série — único quando informado                    |
-| `dataAquisicao`    | string  | sim         | Data de aquisição (formato ISO 8601: YYYY-MM-DD)            |
-| `dataGarantia`     | string  | não         | Data de vencimento da garantia (formato ISO 8601)           |
-| `localId`          | string  | sim         | ID do local associado                                       |
-| `situacaoAdmin`    | string  | sim         | Situação administrativa: `ativo`, `inativo`, `descartado`   |
-| `situacaoOper`     | string  | calculado   | Situação operacional calculada (ver regras)                 |
-| `criadoEm`         | string  | sim         | Timestamp de criação                                        |
-| `atualizadoEm`     | string  | sim         | Timestamp da última atualização                             |
+| Campo                    | Tipo      | Obrigatório | Descrição                                                      |
+|--------------------------|-----------|-------------|----------------------------------------------------------------|
+| `id`                     | string    | sim         | Identificador único gerado pelo sistema                        |
+| `patrimonio`             | string    | sim         | Número de patrimônio — único no sistema                        |
+| `categoria`              | string    | sim         | Categoria: `desktop`, `notebook`, `impressora`, `servidor`, `outro` |
+| `fabricante`             | string    | sim         | Nome do fabricante                                             |
+| `modelo`                 | string    | sim         | Modelo do equipamento                                          |
+| `numeroSerie`            | string    | não         | Número de série — único quando informado                       |
+| `dataAquisicao`          | string    | sim         | Data de aquisição (YYYY-MM-DD)                                 |
+| `dataGarantia`           | string    | não         | Data de vencimento da garantia (YYYY-MM-DD)                    |
+| `localId`                | string    | sim         | ID do local associado                                          |
+| `situacaoAdministrativa` | string    | sim         | `ativo`, `inativo` ou `descartado`                             |
+| `criadoEm`               | string    | sim         | Timestamp de criação (ISO 8601)                                |
+| `atualizadoEm`           | string    | sim         | Timestamp da última atualização (ISO 8601)                     |
 
-### Manutenção (`maintenance`)
+> A situação operacional não é armazenada. É calculada em tempo de execução a partir de `situacaoAdministrativa` e das manutenções ativas.
 
-| Campo              | Tipo    | Obrigatório | Descrição                                                   |
-|--------------------|---------|-------------|-------------------------------------------------------------|
-| `id`               | string  | sim         | Identificador único gerado pelo sistema                     |
-| `equipmentId`      | string  | sim         | ID do equipamento associado                                 |
-| `responsibleId`    | string  | sim         | ID do técnico responsável                                   |
-| `tipo`             | string  | sim         | Tipo: `preventiva`, `corretiva`, `instalacao`, `outro`      |
-| `prioridade`       | string  | sim         | Prioridade: `baixa`, `media`, `alta`, `critica`             |
-| `descricao`        | string  | sim         | Descrição do problema ou serviço                            |
-| `prazo`            | string  | não         | Data limite (formato ISO 8601)                              |
-| `custo`            | number  | não         | Custo estimado ou real                                      |
-| `estado`           | string  | sim         | Estado: `aberta`, `em_andamento`, `concluida`, `cancelada`  |
-| `criadoEm`         | string  | sim         | Timestamp de criação                                        |
-| `atualizadoEm`     | string  | sim         | Timestamp da última atualização                             |
+### Manutenção
 
-### Local (`location`)
+| Campo           | Tipo    | Obrigatório | Descrição                                                       |
+|-----------------|---------|-------------|-----------------------------------------------------------------|
+| `id`            | string  | sim         | Identificador único gerado pelo sistema                         |
+| `equipamentoId` | string  | sim         | ID do equipamento associado                                     |
+| `tecnicoId`     | string  | sim         | ID do técnico responsável                                       |
+| `tipo`          | string  | sim         | `preventiva`, `corretiva`, `instalacao` ou `outro`              |
+| `prioridade`    | string  | sim         | `baixa`, `media`, `alta` ou `critica`                           |
+| `descricao`     | string  | sim         | Descrição do problema ou serviço                                |
+| `prazo`         | string  | não         | Data limite (YYYY-MM-DD)                                        |
+| `custo`         | number  | não         | Custo estimado ou real                                          |
+| `estado`        | string  | sim         | `aberta`, `em_andamento`, `concluida` ou `cancelada`            |
+| `criadoEm`      | string  | sim         | Timestamp de criação (ISO 8601)                                 |
+| `atualizadoEm`  | string  | sim         | Timestamp da última atualização (ISO 8601)                      |
 
-| Campo              | Tipo    | Obrigatório | Descrição                                                   |
-|--------------------|---------|-------------|-------------------------------------------------------------|
-| `id`               | string  | sim         | Identificador único gerado pelo sistema                     |
-| `nome`             | string  | sim         | Nome do local (ex: Sala 101, Laboratório de TI)             |
-| `descricao`        | string  | não         | Descrição ou observações sobre o local                      |
-| `criadoEm`         | string  | sim         | Timestamp de criação                                        |
+### Local
 
-### Técnico Responsável (`responsible`)
+| Campo       | Tipo   | Obrigatório | Descrição                                      |
+|-------------|--------|-------------|------------------------------------------------|
+| `id`        | string | sim         | Identificador único gerado pelo sistema        |
+| `nome`      | string | sim         | Nome do local (ex: Sala 101, Lab. de TI)       |
+| `descricao` | string | não         | Descrição ou observações sobre o local         |
+| `criadoEm`  | string | sim         | Timestamp de criação (ISO 8601)                |
 
-| Campo              | Tipo    | Obrigatório | Descrição                                                   |
-|--------------------|---------|-------------|-------------------------------------------------------------|
-| `id`               | string  | sim         | Identificador único gerado pelo sistema                     |
-| `nome`             | string  | sim         | Nome completo do técnico                                    |
-| `contato`          | string  | não         | E-mail ou telefone de contato                               |
-| `ativo`            | boolean | sim         | Indica se o técnico está ativo                              |
-| `criadoEm`         | string  | sim         | Timestamp de criação                                        |
+### Técnico
 
-### Evento Histórico (`event`)
+| Campo      | Tipo    | Obrigatório | Descrição                                      |
+|------------|---------|-------------|------------------------------------------------|
+| `id`       | string  | sim         | Identificador único gerado pelo sistema        |
+| `nome`     | string  | sim         | Nome completo do técnico                       |
+| `contato`  | string  | não         | E-mail ou telefone de contato                  |
+| `ativo`    | boolean | sim         | Indica se o técnico está ativo                 |
+| `criadoEm` | string  | sim         | Timestamp de criação (ISO 8601)                |
 
-| Campo              | Tipo    | Obrigatório | Descrição                                                   |
-|--------------------|---------|-------------|-------------------------------------------------------------|
-| `id`               | string  | sim         | Identificador único gerado pelo sistema                     |
-| `tipo`             | string  | sim         | Tipo do evento (ver lista de tipos)                         |
-| `equipmentId`      | string  | não         | ID do equipamento relacionado (quando aplicável)            |
-| `maintenanceId`    | string  | não         | ID da manutenção relacionada (quando aplicável)             |
-| `descricao`        | string  | sim         | Descrição legível do evento                                 |
-| `dados`            | object  | não         | Dados adicionais do evento (ex: valores anterior e novo)    |
-| `criadoEm`         | string  | sim         | Timestamp do evento                                         |
+### Evento Histórico
 
-**Tipos de evento disponíveis:**
+| Campo          | Tipo   | Obrigatório | Descrição                                              |
+|----------------|--------|-------------|--------------------------------------------------------|
+| `id`           | string | sim         | Identificador único gerado pelo sistema                |
+| `tipo`         | string | sim         | Tipo do evento (ver lista abaixo)                      |
+| `equipamentoId`| string | não         | ID do equipamento relacionado (quando aplicável)       |
+| `manutencaoId` | string | não         | ID da manutenção relacionada (quando aplicável)        |
+| `descricao`    | string | sim         | Descrição legível do evento                            |
+| `dados`        | object | não         | Informações adicionais do evento (valores antes/depois)|
+| `criadoEm`     | string | sim         | Timestamp do evento (ISO 8601)                         |
+
+**Tipos de evento:**
 - `equipamento_cadastrado`
 - `equipamento_editado`
 - `equipamento_transferido`
@@ -210,11 +249,11 @@ Todos os relatórios são apresentados em tabelas e indicadores numéricos. Grá
 ## 7. Relacionamentos
 
 ```
-Local (1) ──────────── (N) Equipamento
-Equipamento (1) ──────── (N) Manutenção
-Técnico (1) ─────────── (N) Manutenção
-Equipamento (1) ──────── (N) Evento Histórico
-Manutenção (1) ──────── (N) Evento Histórico
+Local        (1) ── (N) Equipamento
+Equipamento  (1) ── (N) Manutenção
+Técnico      (1) ── (N) Manutenção
+Equipamento  (1) ── (N) Evento Histórico
+Manutenção   (1) ── (N) Evento Histórico
 ```
 
 ---
@@ -231,10 +270,10 @@ Quando informado, o número de série não pode ser duplicado entre equipamentos
 Todo equipamento deve estar associado a um local cadastrado e existente no sistema.
 
 ### RN-04 — Restrição de manutenção para equipamento inativo ou descartado
-Não é permitido abrir nova manutenção para equipamento com situação administrativa `inativo` ou `descartado`.
+Não é permitido abrir nova manutenção para equipamento com `situacaoAdministrativa` igual a `inativo` ou `descartado`.
 
 ### RN-05 — Uma manutenção ativa por equipamento
-Um equipamento não pode possuir duas manutenções com estado `aberta` ou `em_andamento` simultaneamente.
+Um equipamento não pode ter duas manutenções com estado `aberta` ou `em_andamento` simultaneamente.
 
 ### RN-06 — Técnico inativo não recebe manutenções
 Não é permitido atribuir uma nova manutenção a um técnico com `ativo = false`.
@@ -242,17 +281,17 @@ Não é permitido atribuir uma nova manutenção a um técnico com `ativo = fals
 ### RN-07 — Restrição de exclusão por relacionamento
 - Não é permitido excluir um local que possua equipamentos associados.
 - Não é permitido excluir um técnico que possua manutenções associadas.
-- Não é permitido excluir um equipamento que possua manutenções ou histórico associado. Neste caso, a situação administrativa deverá ser alterada para `descartado`.
+- Não é permitido excluir um equipamento que possua manutenções ou histórico associado. Neste caso, `situacaoAdministrativa` deve ser alterada para `descartado`.
 
 ### RN-08 — Situação operacional calculada
 A situação operacional do equipamento é derivada das seguintes condições:
 
-| Situação Administrativa | Manutenção Ativa?  | Situação Operacional |
-|-------------------------|--------------------|----------------------|
-| `ativo`                 | Não                | `operacional`        |
-| `ativo`                 | Sim                | `em_manutencao`      |
-| `inativo`               | Qualquer           | `inativo`            |
-| `descartado`            | Qualquer           | `descartado`         |
+| Situação Administrativa | Manutenção Ativa? | Situação Operacional |
+|-------------------------|-------------------|----------------------|
+| `ativo`                 | Não               | `operacional`        |
+| `ativo`                 | Sim               | `em_manutencao`      |
+| `inativo`               | Qualquer          | `inativo`            |
+| `descartado`            | Qualquer          | `descartado`         |
 
 ### RN-09 — Manutenção atrasada
 Uma manutenção com estado `aberta` ou `em_andamento` cuja data de prazo seja anterior à data atual é considerada atrasada.
@@ -262,125 +301,117 @@ Uma garantia é considerada próxima do vencimento quando a data de vencimento e
 
 ---
 
-## 9. Telas
+## 9. Páginas
 
-| Tela                   | Descrição                                                      |
-|------------------------|----------------------------------------------------------------|
-| Dashboard              | Visão geral com indicadores e atividades recentes              |
-| Lista de Equipamentos  | Tabela com pesquisa e filtros                                  |
-| Detalhes do Equipamento| Dados completos, histórico e manutenções do equipamento        |
-| Formulário Equipamento | Cadastro e edição de equipamento                               |
-| Lista de Manutenções   | Tabela com filtros por estado e prioridade                     |
-| Formulário Manutenção  | Cadastro e edição de manutenção                                |
-| Locais                 | Listagem, cadastro e edição de locais                          |
-| Técnicos               | Listagem, cadastro e edição de técnicos responsáveis           |
-| Histórico              | Lista cronológica de todos os eventos registrados              |
-| Relatórios             | Relatórios tabulares e indicadores                             |
-| Backup                 | Exportação e importação de dados                               |
+| Página              | Arquivo             | Conteúdo                                                        |
+|---------------------|---------------------|-----------------------------------------------------------------|
+| Dashboard           | `index.html`        | Indicadores calculados e atividades recentes                    |
+| Equipamentos        | `equipamentos.html` | Inventário com pesquisa, filtros e formulário embutido          |
+| Detalhe             | `equipamento.html`  | Dados completos, histórico e manutenções do equipamento         |
+| Manutenções         | `manutencoes.html`  | Lista de manutenções com formulário embutido                    |
+| Cadastros           | `cadastros.html`    | Gerenciamento de locais e técnicos (mesma página, duas seções)  |
+| Relatórios e Backup | `relatorios.html`   | Relatórios tabulares e seção de exportação/importação           |
+
+Os formulários de cadastro e edição ficam embutidos nas próprias páginas (como seções ou painéis que aparecem e desaparecem), sem páginas HTML separadas para cada formulário.
 
 ---
 
 ## 10. Fluxos Principais
 
 ### Cadastro de equipamento
-1. Usuário acessa "Equipamentos" → "Novo Equipamento".
-2. Preenche os campos obrigatórios.
-3. Seleciona um local cadastrado.
-4. Sistema valida unicidade do patrimônio e do número de série.
-5. Sistema salva o equipamento e registra evento `equipamento_cadastrado`.
-6. Usuário é redirecionado para a lista ou detalhes do equipamento.
+1. Usuário acessa "Equipamentos" e abre o formulário de cadastro na mesma página.
+2. Preenche os campos obrigatórios e seleciona um local cadastrado.
+3. Sistema valida unicidade do patrimônio e do número de série.
+4. Sistema salva o equipamento e registra o evento `equipamento_cadastrado`.
+5. Formulário fecha e a lista de equipamentos é atualizada.
 
 ### Abertura de manutenção
-1. Usuário acessa "Manutenções" → "Nova Manutenção" ou parte dos detalhes do equipamento.
+1. Usuário acessa "Manutenções" e abre o formulário na mesma página.
 2. Seleciona o equipamento (deve estar ativo e sem manutenção ativa).
 3. Seleciona o técnico responsável (deve estar ativo).
 4. Preenche tipo, prioridade, descrição e prazo.
 5. Sistema valida as regras RN-04, RN-05 e RN-06.
-6. Sistema salva a manutenção com estado `aberta` e registra evento `manutencao_aberta`.
+6. Sistema salva a manutenção com estado `aberta` e registra `manutencao_aberta`.
 
 ### Conclusão de manutenção
-1. Usuário acessa a manutenção desejada.
-2. Atualiza o estado para `concluida`.
-3. Pode informar o custo final.
-4. Sistema registra evento `manutencao_concluida` e recalcula a situação operacional do equipamento.
+1. Usuário localiza a manutenção na lista e altera o estado para `concluida`.
+2. Pode informar o custo final.
+3. Sistema registra `manutencao_concluida` e recalcula a situação operacional do equipamento.
 
 ### Exportação de backup
-1. Usuário acessa "Backup" → "Exportar".
-2. Sistema gera um objeto JSON com todas as coleções.
-3. Arquivo é disponibilizado para download com nome `techtrack-backup-YYYY-MM-DD.json`.
+1. Usuário acessa "Relatórios" e vai até a seção de Backup.
+2. Clica em "Exportar".
+3. Sistema gera um arquivo JSON com todos os dados e disponibiliza para download.
 
 ### Importação de backup
-1. Usuário seleciona um arquivo JSON.
-2. Sistema valida a estrutura do arquivo antes de qualquer alteração.
-3. Sistema solicita confirmação explícita do usuário.
-4. Em caso de estrutura inválida, os dados atuais são preservados e o usuário é informado.
-5. Em caso de confirmação, os dados atuais são substituídos pelos dados importados.
+1. Usuário seleciona um arquivo JSON na seção de Backup.
+2. Sistema valida a estrutura antes de qualquer alteração.
+3. Sistema solicita confirmação explícita.
+4. Se o arquivo for inválido, os dados atuais são preservados e o usuário é informado.
+5. Se confirmado, os dados são substituídos pelos dados importados.
 
 ---
 
 ## 11. Tecnologias
 
-| Tecnologia     | Uso                                              | Justificativa                                         |
-|----------------|--------------------------------------------------|-------------------------------------------------------|
-| HTML5          | Estrutura de todas as páginas                    | Linguagem base da web, estudada na disciplina         |
-| CSS3           | Estilização e layout                             | Estudado na disciplina (Flexbox, Grid, Media Queries) |
-| JavaScript     | Lógica, manipulação do DOM e persistência        | Estudado na disciplina                                |
-| localStorage   | Armazenamento local dos dados                    | Estudado na disciplina (Web Storage)                  |
-| JSON           | Formato de dados e backup                        | Estudado na disciplina                                |
-| qrcode.js      | Geração de QR Code (biblioteca local)            | Biblioteca pequena, sem dependências, incorporada     |
+| Tecnologia     | Uso                                            | Justificativa                                       |
+|----------------|------------------------------------------------|-----------------------------------------------------|
+| HTML5          | Estrutura de todas as páginas                  | Linguagem base da web, estudada na disciplina       |
+| CSS3           | Estilização e layout responsivo                | Flexbox, Grid e Media Queries estudados na disciplina |
+| JavaScript     | Lógica, manipulação do DOM e persistência      | Estudado na disciplina                              |
+| localStorage   | Armazenamento local dos dados                  | Estudado na disciplina (Web Storage)                |
+| JSON           | Formato de dados e backup                      | Estudado na disciplina                              |
+| qrcode.js      | Geração de QR Code (funcionalidade adicional)  | Biblioteca pequena, incorporada localmente          |
 
-**Nenhuma dependência de CDN, servidor ou API externa é utilizada.**
+**Sem frameworks CSS, sem frameworks JavaScript, sem CDNs, sem backend.**
 
 ---
 
-## 12. Arquitetura prevista
+## 12. Arquitetura
+
+### Estrutura de pastas
 
 ```
-TechTracker/
-├── index.html                  # Página principal (SPA ou entrada)
+TechTrack/
+│
+├── index.html              # Dashboard
+├── equipamentos.html       # Inventário e cadastro de equipamentos
+├── equipamento.html        # Detalhes de um equipamento
+├── manutencoes.html        # Gerenciamento de manutenções
+├── cadastros.html          # Locais e técnicos
+├── relatorios.html         # Relatórios e backup
+│
 ├── css/
-│   ├── reset.css               # Reset básico de estilos
-│   ├── base.css                # Estilos globais, variáveis CSS, tipografia
-│   ├── layout.css              # Estrutura: menu lateral, cabeçalho, conteúdo
-│   └── components.css          # Cards, tabelas, formulários, botões, badges
+│   └── style.css           # Estilos globais, layout e componentes
+│
 ├── js/
-│   ├── storage.js              # Leitura e escrita no localStorage
-│   ├── data.js                 # Inicialização e estrutura dos dados
-│   ├── utils.js                # Funções utilitárias (formatação, validação, ID)
-│   ├── events.js               # Registro automático de eventos históricos
-│   ├── equipment.js            # Lógica de equipamentos
-│   ├── maintenance.js          # Lógica de manutenções
-│   ├── location.js             # Lógica de locais
-│   ├── responsible.js          # Lógica de técnicos responsáveis
-│   ├── history.js              # Consulta e renderização do histórico
-│   ├── dashboard.js            # Cálculo dos indicadores do dashboard
-│   ├── reports.js              # Geração dos relatórios
-│   ├── backup.js               # Exportação e importação de dados
-│   ├── qrcode.js               # Integração com a biblioteca de QR Code
-│   └── app.js                  # Inicialização e roteamento da aplicação
-├── pages/
-│   ├── dashboard.html          # Tela do dashboard
-│   ├── equipments.html         # Lista de equipamentos
-│   ├── equipment-detail.html   # Detalhes do equipamento
-│   ├── equipment-form.html     # Formulário de equipamento
-│   ├── maintenances.html       # Lista de manutenções
-│   ├── maintenance-form.html   # Formulário de manutenção
-│   ├── locations.html          # Gerenciamento de locais
-│   ├── responsibles.html       # Gerenciamento de técnicos
-│   ├── history.html            # Histórico de eventos
-│   ├── reports.html            # Relatórios
-│   └── backup.html             # Backup e restauração
-├── lib/
-│   └── qrcode.min.js           # Biblioteca de QR Code (incorporada localmente)
+│   ├── armazenamento.js    # Leitura e escrita no localStorage
+│   ├── dados.js            # Estrutura e inicialização dos dados
+│   ├── funcoes.js          # Funções utilitárias (formatar data, gerar ID etc.)
+│   ├── equipamentos.js     # Lógica de equipamentos (CRUD, validações, histórico)
+│   ├── manutencoes.js      # Lógica de manutenções (CRUD, validações, histórico)
+│   ├── cadastros.js        # Lógica de locais e técnicos
+│   ├── dashboard.js        # Cálculo e renderização dos indicadores
+│   └── relatorios.js       # Geração dos relatórios e backup
+│
+├── assets/
+│   └── imagens/            # Imagens e ícones do projeto
+│
 ├── .gitignore
 ├── README.md
 ├── PROJECT_SPEC.md
 └── GUIA_DE_APRESENTACAO.md
 ```
 
-**Decisão de arquitetura:** o projeto utilizará múltiplas páginas HTML (MPA) em vez de uma SPA (Single Page Application), pois esta abordagem é mais simples, mais próxima do que foi estudado na disciplina e mais fácil de compreender e explicar.
+Arquivos adicionais como `historico.js`, `backup.js` ou `qrcode.js` poderão ser criados quando suas responsabilidades justificarem a separação. Evitar dividir funcionalidades simples em muitos arquivos.
 
-Cada página HTML importará os arquivos CSS e JS necessários. O arquivo `storage.js` e `data.js` serão incluídos em todas as páginas como base.
+### Decisões de arquitetura
+
+- **MPA (múltiplas páginas HTML):** cada funcionalidade principal tem sua própria página HTML. É a abordagem mais próxima do que foi estudado na disciplina e mais fácil de compreender.
+- **Formulários embutidos:** os formulários de cadastro e edição ficam dentro das próprias páginas de listagem, aparecendo e desaparecendo conforme necessário. Evita criar páginas adicionais para cada formulário.
+- **Um arquivo CSS:** toda a estilização fica em `css/style.css`, facilitando a leitura e manutenção para um projeto deste porte.
+- **Scripts com `defer`:** os arquivos JavaScript serão carregados com o atributo `defer` quando isso facilitar a compreensão do código e evitar problemas de ordem de execução.
+- **Sem ES Modules nem ferramentas de build:** não são necessários para este escopo e adicionariam complexidade desnecessária.
 
 ---
 
@@ -392,21 +423,26 @@ techtrack:data:v1
 ```
 
 ### Estrutura do objeto armazenado
-```json
+
+```javascript
 {
-  "equipments": [],
-  "maintenances": [],
-  "locations": [],
-  "responsibles": [],
-  "events": []
+  versao: 1,
+  atualizadoEm: "2025-01-01T00:00:00.000Z",
+  dados: {
+    equipamentos: [],
+    manutencoes: [],
+    locais: [],
+    tecnicos: [],
+    eventos: []
+  }
 }
 ```
 
 ### Regras de persistência
-- Todos os dados são lidos e escritos em um único objeto JSON.
+- Todos os dados ficam em um único objeto JSON, sob uma única chave no localStorage.
 - Nenhum indicador calculado é armazenado. Todos são derivados em tempo de execução.
-- A versão da chave (`v1`) permite futura migração de estrutura sem perda de dados.
-- O backup exporta exatamente este objeto, sem transformações.
+- O campo `versao` permite futura migração de estrutura sem perda de dados.
+- O backup exporta exatamente este objeto, sem transformações adicionais.
 
 ---
 
@@ -415,15 +451,17 @@ techtrack:data:v1
 - Sem backend, servidor ou banco de dados externo.
 - Sem frameworks CSS (Bootstrap, Tailwind etc.).
 - Sem frameworks JavaScript (React, Vue, Angular etc.).
-- Sem CDNs ou APIs externas.
+- Sem ES Modules ou ferramentas de build (Vite, Webpack etc.) sem justificativa concreta.
+- Sem CDNs ou dependências externas carregadas em tempo de execução.
 - Sem autenticação de usuários.
-- Sem comunicação em rede durante o uso normal da aplicação.
 - Os dados ficam restritos ao navegador do usuário.
 - O localStorage possui limite de aproximadamente 5 MB por origem.
 
 ---
 
 ## 15. Requisitos Funcionais
+
+### Essenciais
 
 | ID    | Descrição                                                                          |
 |-------|------------------------------------------------------------------------------------|
@@ -436,27 +474,38 @@ techtrack:data:v1
 | RF-07 | O sistema deve impedir atribuição de manutenções a técnicos inativos.              |
 | RF-08 | O sistema deve registrar automaticamente eventos históricos para ações relevantes. |
 | RF-09 | O sistema deve exibir indicadores calculados no dashboard.                         |
-| RF-10 | O sistema deve identificar manutenções atrasadas.                                  |
-| RF-11 | O sistema deve identificar garantias próximas do vencimento.                       |
-| RF-12 | O sistema deve gerar relatórios tabulares a partir dos dados armazenados.          |
-| RF-13 | O sistema deve exportar todos os dados em formato JSON.                            |
-| RF-14 | O sistema deve importar dados de um arquivo JSON com validação prévia.             |
-| RF-15 | O sistema deve gerar QR Code para equipamentos e permitir download ou impressão.   |
+| RF-10 | O sistema deve permitir pesquisa e filtros nas listagens de equipamentos.          |
+
+### Complementares
+
+| ID    | Descrição                                                                          |
+|-------|------------------------------------------------------------------------------------|
+| RF-11 | O sistema deve identificar manutenções atrasadas.                                  |
+| RF-12 | O sistema deve identificar garantias próximas do vencimento.                       |
+| RF-13 | O sistema deve gerar relatórios tabulares a partir dos dados armazenados.          |
+| RF-14 | O sistema deve exportar todos os dados em formato JSON.                            |
+| RF-15 | O sistema deve importar dados de um arquivo JSON com validação prévia.             |
+
+### Adicionais
+
+| ID    | Descrição                                                                          |
+|-------|------------------------------------------------------------------------------------|
+| RF-16 | O sistema deve gerar QR Code para equipamentos e permitir download ou impressão.   |
 
 ---
 
 ## 16. Requisitos Não Funcionais
 
-| ID     | Descrição                                                                             |
-|--------|---------------------------------------------------------------------------------------|
-| RNF-01 | A aplicação deve funcionar como site estático, sem servidor.                          |
-| RNF-02 | A aplicação deve ser responsiva e utilizável em telas de 768px ou mais.               |
-| RNF-03 | A interface deve ser simples, clara e compatível com o nível da disciplina.           |
-| RNF-04 | Nenhuma dependência externa deve ser carregada em tempo de execução.                  |
-| RNF-05 | O código deve ser organizado em arquivos separados por responsabilidade.              |
-| RNF-06 | O código deve ser legível e comentado para facilitar a compreensão pelo aluno.        |
-| RNF-07 | Os dados devem persistir entre sessões do navegador via localStorage.                 |
-| RNF-08 | A aplicação deve preservar os dados existentes em caso de importação inválida.        |
+| ID     | Descrição                                                                                |
+|--------|------------------------------------------------------------------------------------------|
+| RNF-01 | A aplicação deve funcionar como site estático, sem servidor de aplicação.                |
+| RNF-02 | A aplicação deve ser responsiva: celulares (~360px), tablets (~768px) e desktops.        |
+| RNF-03 | A interface deve ser simples, clara e compatível com o nível da disciplina.              |
+| RNF-04 | Nenhuma dependência externa deve ser carregada em tempo de execução.                     |
+| RNF-05 | O código deve ser organizado em arquivos separados por responsabilidade.                 |
+| RNF-06 | O código deve ser legível e comentado para facilitar a compreensão pelo aluno.           |
+| RNF-07 | Os dados devem persistir entre sessões do navegador via localStorage.                    |
+| RNF-08 | A aplicação deve preservar os dados existentes em caso de importação inválida.           |
 
 ---
 
@@ -470,10 +519,29 @@ techtrack:data:v1
 - [ ] O histórico registra automaticamente todos os eventos previstos.
 - [ ] A exportação gera um arquivo JSON com todos os dados.
 - [ ] A importação com arquivo inválido não altera os dados existentes.
-- [ ] QR Code é gerado e pode ser baixado para qualquer equipamento.
+- [ ] QR Code é gerado e pode ser baixado para qualquer equipamento. *(funcionalidade adicional)*
 - [ ] A aplicação funciona sem conexão com internet.
-- [ ] A aplicação abre corretamente como arquivo HTML local no navegador.
+- [ ] A aplicação é utilizável em celulares a partir de 360px de largura.
 
 ---
 
-*Última atualização: Etapa 00 — Fundação e documentação.*
+## 18. Roadmap
+
+| Etapa | Descrição                                  | Situação       |
+|-------|--------------------------------------------|----------------|
+| 00    | Fundação e documentação                    | ✅ Concluída    |
+| 00.1  | Alinhamento documental                     | ✅ Concluída    |
+| 01    | Estrutura HTML e navegação                 | 🔧 Pendente    |
+| 02    | Identidade visual e CSS responsivo         | 🔧 Pendente    |
+| 03    | Modelagem de dados e localStorage          | 🔧 Pendente    |
+| 04    | CRUD de equipamentos                       | 🔧 Pendente    |
+| 05    | CRUD de locais e técnicos                  | 🔧 Pendente    |
+| 06    | CRUD de manutenções                        | 🔧 Pendente    |
+| 07    | Dashboard e histórico                      | 🔧 Pendente    |
+| 08    | Relatórios e backup                        | 🔧 Pendente    |
+| 09    | QR Code e etiquetas                        | 🔧 Pendente    |
+| 10    | Testes, refinamento e preparação da apresentação | 🔧 Pendente |
+
+---
+
+*Última atualização: Etapa 00.1 — Alinhamento documental.*

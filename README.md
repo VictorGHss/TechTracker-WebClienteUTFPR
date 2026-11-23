@@ -8,7 +8,7 @@ Sistema web de gerenciamento de equipamentos de informática e manutenções de 
 
 Projeto desenvolvido para a disciplina de **Desenvolvimento Web** da **UTFPR**.
 
-O objetivo é construir uma aplicação web funcional, organizada e com boa apresentação, aplicando os conteúdos estudados na disciplina: HTML5, CSS3, JavaScript, DOM, eventos, localStorage, JSON e orientação a objetos.
+O objetivo é construir uma aplicação web funcional, organizada e com boa apresentação, aplicando os conteúdos estudados na disciplina: HTML5, CSS3, JavaScript, DOM, eventos, localStorage e JSON.
 
 ---
 
@@ -19,51 +19,99 @@ O objetivo é construir uma aplicação web funcional, organizada e com boa apre
 - JavaScript puro
 - localStorage (Web Storage)
 - JSON
-- qrcode.js (biblioteca local, sem CDN)
 
 Sem frameworks, sem backend, sem dependências externas.
+A biblioteca qrcode.js será incluída localmente na etapa de QR Code.
 
 ---
 
-## Escopo resumido
+## Estrutura de diretórios
 
-| Módulo              | Descrição                                                      |
-|---------------------|----------------------------------------------------------------|
-| Dashboard           | Indicadores calculados: equipamentos, manutenções e alertas    |
-| Equipamentos        | Cadastro, edição, exclusão, pesquisa e detalhes                |
-| Manutenções         | Abertura, acompanhamento e conclusão de ordens de serviço      |
-| Locais              | Gerenciamento de localizações dos equipamentos                 |
-| Técnicos            | Cadastro de técnicos responsáveis por manutenções              |
-| Histórico           | Registro automático de todos os eventos relevantes             |
-| Relatórios          | Inventário, custos, garantias e situação das manutenções       |
-| Backup              | Exportação e importação dos dados em JSON                      |
-| QR Code             | Geração de etiquetas para equipamentos                         |
-
----
-
-## Situação atual do desenvolvimento
-
-| Etapa | Descrição                              | Situação      |
-|-------|----------------------------------------|---------------|
-| 00    | Fundação e documentação                | ✅ Concluída   |
-| 01    | Estrutura base, layout e navegação     | 🔧 Pendente   |
-| 02    | Persistência e dados                   | 🔧 Pendente   |
-| 03    | Equipamentos                           | 🔧 Pendente   |
-| 04    | Manutenções                            | 🔧 Pendente   |
-| 05    | Cadastros auxiliares                   | 🔧 Pendente   |
-| 06    | Dashboard                              | 🔧 Pendente   |
-| 07    | Histórico                              | 🔧 Pendente   |
-| 08    | Relatórios                             | 🔧 Pendente   |
-| 09    | Backup                                 | 🔧 Pendente   |
-| 10    | QR Code                                | 🔧 Pendente   |
+```
+TechTrack/
+│
+├── index.html              # Dashboard (página inicial)
+├── equipamentos.html       # Inventário e cadastro de equipamentos
+├── equipamento.html        # Detalhes de um equipamento
+├── manutencoes.html        # Gerenciamento de manutenções
+├── cadastros.html          # Locais e técnicos
+├── relatorios.html         # Relatórios e backup
+│
+├── css/
+│   └── style.css           # Estilos globais, layout e responsividade
+│
+├── js/
+│   ├── armazenamento.js    # Leitura e escrita no localStorage
+│   ├── dados.js            # Estrutura e inicialização dos dados
+│   ├── funcoes.js          # Funções utilitárias
+│   ├── equipamentos.js     # Lógica de equipamentos
+│   ├── manutencoes.js      # Lógica de manutenções
+│   ├── cadastros.js        # Lógica de locais e técnicos
+│   ├── dashboard.js        # Indicadores do painel
+│   └── relatorios.js       # Relatórios e backup
+│
+└── assets/
+    └── imagens/
+```
 
 ---
 
-## Instruções de execução
+## Módulos
 
-🔧 *A ser preenchido quando a estrutura HTML estiver implementada.*
+| Módulo              | Página               | Descrição                                                        |
+|---------------------|----------------------|------------------------------------------------------------------|
+| Dashboard           | `index.html`         | Indicadores calculados automaticamente e atividades recentes     |
+| Equipamentos        | `equipamentos.html`  | Inventário com pesquisa, filtros e formulário de cadastro/edição |
+| Detalhe             | `equipamento.html`   | Dados completos, histórico e manutenções do equipamento          |
+| Manutenções         | `manutencoes.html`   | Lista e formulário de manutenções                                |
+| Cadastros           | `cadastros.html`     | Gerenciamento de locais e técnicos responsáveis                  |
+| Relatórios e Backup | `relatorios.html`    | Relatórios tabulares, exportação e importação de dados           |
 
-A aplicação será executada como site estático — basta abrir o arquivo `index.html` no navegador. Nenhuma instalação, servidor ou dependência externa é necessária.
+---
+
+## Prioridades das funcionalidades
+
+**Essenciais:** dashboard, CRUD de equipamentos, manutenções, locais, técnicos, histórico, pesquisa, filtros e persistência.
+
+**Complementares:** relatórios tabulares, alertas de garantia e atraso, backup JSON.
+
+**Adicionais:** geração de QR Code e download de etiquetas.
+
+---
+
+## Roadmap
+
+| Etapa | Descrição                                        | Situação       |
+|-------|--------------------------------------------------|----------------|
+| 00    | Fundação e documentação                          | ✅ Concluída    |
+| 00.1  | Alinhamento documental                           | ✅ Concluída    |
+| 01    | Estrutura HTML e navegação                       | 🔧 Pendente    |
+| 02    | Identidade visual e CSS responsivo               | 🔧 Pendente    |
+| 03    | Modelagem de dados e localStorage                | 🔧 Pendente    |
+| 04    | CRUD de equipamentos                             | 🔧 Pendente    |
+| 05    | CRUD de locais e técnicos                        | 🔧 Pendente    |
+| 06    | CRUD de manutenções                              | 🔧 Pendente    |
+| 07    | Dashboard e histórico                            | 🔧 Pendente    |
+| 08    | Relatórios e backup                              | 🔧 Pendente    |
+| 09    | QR Code e etiquetas                              | 🔧 Pendente    |
+| 10    | Testes, refinamento e preparação da apresentação | 🔧 Pendente    |
+
+---
+
+## Como executar
+
+A aplicação é um site estático — não há servidor de aplicação, banco de dados ou processamento fora do navegador.
+
+A forma recomendada é usar um servidor estático local, como a extensão **Live Server** do VS Code:
+
+1. Abra a pasta do projeto no VS Code ou Kiro IDE.
+2. Clique com o botão direito em `index.html`.
+3. Selecione **"Open with Live Server"**.
+4. O navegador abrirá o projeto em `http://localhost:5500` (ou porta similar).
+
+> O Live Server apenas serve os arquivos para o navegador. Ele não representa um backend nem processa dados. O TechTrack continua sendo 100% frontend.
+
+A abertura direta via `file://` (clicando duas vezes no arquivo) pode funcionar na maioria dos navegadores, mas o comportamento do localStorage pode variar. Recomenda-se o servidor estático local para evitar inconsistências.
 
 ---
 
