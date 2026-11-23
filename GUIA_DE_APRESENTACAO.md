@@ -838,6 +838,72 @@ try {
 
 Na mesma janela do DevTools, clique em **Application** (ou **Armazenamento**) → **Local Storage** → origem da página. Você verá a chave `techtrack:data:v1` e seu valor JSON completo.
 
+#### Por que leitura e escrita são verificadas separadamente?
+
+Imagine um caderno quase cheio. Você ainda consegue **ler** o que está escrito nele — mas não consegue **escrever** mais nada porque as páginas acabaram.
+
+O localStorage funciona da mesma forma. Quando ele está cheio:
+
+- `getItem` continua funcionando — os dados existentes ainda podem ser lidos.
+- `setItem` lança um erro chamado `QuotaExceededError` — não é possível gravar mais nada.
+
+Na versão anterior do código, `carregarDados()` testava a disponibilidade tentando escrever uma chave temporária antes de ler. Se o storage estivesse cheio, essa escrita falhava e impedia a leitura — mesmo que os dados ainda estivessem lá.
+
+A versão corrigida separa as responsabilidades:
+
+```javascript
+// carregarDados() — testa APENAS se localStorage existe, sem escrever nada
+var storage = null;
+try {
+    storage = window.localStorage;   // acessar a propriedade já é suficiente
+    if (!storage) {
+        throw new TypeError("window.localStorage não existe.");
+    }
+} catch (erroAcesso) {
+    // SecurityError: iframe restrito ou contexto sem permissão
+    throw { tipo: "localStorage_indisponivel", ... };
+}
+
+// A leitura acontece separadamente, sem nenhuma escrita antes
+try {
+    conteudoTexto = storage.getItem(TechTrack.CHAVE_ARMAZENAMENTO);
+} catch (erroLeitura) {
+    throw { tipo: "erro_leitura", ... };
+}
+```
+
+```javascript
+// salvarDados() — tenta escrever e trata o erro diretamente
+try {
+    storage.setItem(TechTrack.CHAVE_ARMAZENAMENTO, textoJson);
+} catch (erroGravacao) {
+    // Identifica limite excedido pelo nome ou código do erro,
+    // não pela mensagem textual (que varia entre navegadores)
+    var ehLimiteExcedido = (
+        erroGravacao.name === "QuotaExceededError" ||
+        erroGravacao.name === "NS_ERROR_DOM_QUOTA_REACHED" ||
+        erroGravacao.code === 22
+    );
+
+    if (ehLimiteExcedido) {
+        throw { tipo: "limite_armazenamento", ... };
+    }
+    throw { tipo: "erro_gravacao", ... };
+}
+```
+
+**Por que verificar `name` e `code` em vez da mensagem do erro?**
+
+A mensagem de texto de um erro (`erroGravacao.message`) varia entre navegadores — Chrome, Firefox e Safari escrevem textos diferentes. O `name` e o `code` seguem padrões definidos pela especificação W3C, o que torna a verificação confiável independentemente do navegador. `code === 22` cobre navegadores mais antigos que usam o código numérico antes de o nome ter sido padronizado.
+
+**O que acontece quando o storage está cheio e há dados salvos?**
+
+| Operação | Resultado |
+|---|---|
+| `carregarDados()` | Funciona — lê e retorna os dados existentes normalmente |
+| `salvarDados()` | Falha — lança `{ tipo: "limite_armazenamento", ... }` |
+| Dados existentes | Preservados — nenhum dado é apagado automaticamente |
+
 | Conceito da aula | Onde aparece na Etapa 03 |
 |---|---|
 | Objetos JavaScript (aula 7) | Estrutura de equipamento, manutenção, local, técnico e evento |
@@ -1090,6 +1156,7 @@ Usar Bootstrap ou Tailwind geraria o estilo automaticamente, mas o código CSS r
 | 01    | Estrutura HTML e navegação                       | ✅ Concluída    |
 | 02    | Identidade visual e CSS responsivo               | ✅ Concluída    |
 | 03    | Modelagem de dados e localStorage                | ✅ Concluída   |
+| 03.1  | Refinamento do armazenamento local               | ✅ Concluída   |
 | 04    | CRUD de equipamentos                             | 🔧 Pendente    |
 | 05    | CRUD de locais e técnicos                        | 🔧 Pendente    |
 | 06    | CRUD de manutenções                              | 🔧 Pendente    |
@@ -1100,5 +1167,5 @@ Usar Bootstrap ou Tailwind geraria o estilo automaticamente, mas o código CSS r
 
 ---
 
-*Última atualização: Etapa 03 — Modelagem de dados e localStorage.*
+*Última atualização: Etapa 03.1 — Refinamento do armazenamento local.*
 *Este documento será expandido a cada etapa de implementação.*

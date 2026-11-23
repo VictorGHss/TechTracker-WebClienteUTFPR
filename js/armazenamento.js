@@ -22,6 +22,15 @@
  * não há necessidade de Promises ou async/await. O uso de async/await
  * será demonstrado futuramente na leitura de arquivos para o backup,
  * onde a operação é genuinamente assíncrona.
+ *
+ * POR QUE LEITURA E ESCRITA SÃO VERIFICADAS SEPARADAMENTE?
+ * Um localStorage cheio impede novas gravações (setItem lança
+ * QuotaExceededError), mas os dados já armazenados continuam
+ * acessíveis via getItem. Se a verificação de disponibilidade
+ * tentasse escrever antes de ler, bloquearia a leitura mesmo quando
+ * ela ainda é possível. Por isso, carregarDados() testa apenas o
+ * acesso de leitura, e salvarDados() lida diretamente com os erros
+ * de escrita no momento em que eles ocorrem.
  */
 
 window.TechTrack = window.TechTrack || {};
@@ -34,9 +43,13 @@ window.TechTrack = window.TechTrack || {};
  * Carrega os dados do localStorage e os retorna como objeto JavaScript.
  *
  * Fluxo de execução:
- *   1. Verifica se o localStorage está disponível.
- *   2. Busca o conteúdo da chave "techtrack:data:v1".
- *   3. Se não existir conteúdo, cria e salva a estrutura inicial.
+ *   1. Tenta acessar window.localStorage — detecta indisponibilidade
+ *      (SecurityError em iframes restritos, TypeError em ambientes sem
+ *      Web Storage) sem realizar nenhuma escrita.
+ *   2. Busca o conteúdo da chave "techtrack:data:v1" via getItem.
+ *   3. Se não existir conteúdo, cria a estrutura inicial e tenta salvá-la.
+ *      Se a gravação inicial falhar (storage cheio), retorna a estrutura
+ *      em memória e propaga o aviso.
  *   4. Converte o texto JSON em objeto com JSON.parse.
  *   5. Valida a estrutura recuperada.
  *   6. Retorna o objeto pronto para uso.
@@ -50,20 +63,30 @@ window.TechTrack = window.TechTrack || {};
  * @throws {object} Descrição do erro encontrado.
  */
 TechTrack.carregarDados = function () {
-    // 1. Verificar se o localStorage está disponível
-    if (!TechTrack._localStorageDisponivel()) {
+    // 1. Verificar acesso ao localStorage sem realizar nenhuma escrita.
+    //    Apenas acessar a propriedade window.localStorage já lança
+    //    SecurityError quando o contexto proíbe Web Storage.
+    var storage = null;
+    try {
+        storage = window.localStorage;
+        if (!storage) {
+            throw new TypeError("window.localStorage não existe neste ambiente.");
+        }
+    } catch (erroAcesso) {
         throw {
             tipo: "localStorage_indisponivel",
-            mensagem: "O localStorage não está disponível neste ambiente. Verifique se o navegador suporta Web Storage e se não está em modo privado com restrições.",
+            mensagem: "Não foi possível acessar o localStorage. " +
+                      "Verifique se o navegador suporta Web Storage e se não está em um contexto restrito. " +
+                      "Detalhe: " + erroAcesso.message,
             conteudoOriginal: null
         };
     }
 
+    // 2. Buscar o conteúdo salvo via getItem.
+    //    Erros aqui indicam problema de leitura, não de escrita.
     var conteudoTexto = null;
-
-    // 2. Buscar o conteúdo salvo
     try {
-        conteudoTexto = localStorage.getItem(TechTrack.CHAVE_ARMAZENAMENTO);
+        conteudoTexto = storage.getItem(TechTrack.CHAVE_ARMAZENAMENTO);
     } catch (erroLeitura) {
         throw {
             tipo: "erro_leitura",
@@ -72,20 +95,22 @@ TechTrack.carregarDados = function () {
         };
     }
 
-    // 3. Se não existir nenhum conteúdo, inicializar com estrutura vazia
+    // 3. Se não existir nenhum conteúdo, inicializar com estrutura vazia.
+    //    A tentativa de gravação pode falhar se o storage estiver cheio;
+    //    nesse caso, a estrutura inicial é retornada mesmo assim (em memória),
+    //    e o erro de gravação é propagado para o chamador.
     if (conteudoTexto === null || conteudoTexto === undefined || conteudoTexto === "") {
         var estruturaInicial = TechTrack.criarEstruturaInicial();
-        // Salva a estrutura para que futuras leituras já a encontrem
-        TechTrack.salvarDados(estruturaInicial);
+        TechTrack.salvarDados(estruturaInicial); // pode lançar erro de escrita
         return estruturaInicial;
     }
 
-    // 4. Converter o texto JSON em objeto JavaScript
+    // 4. Converter o texto JSON em objeto JavaScript.
     var objeto = null;
     try {
         objeto = JSON.parse(conteudoTexto);
     } catch (erroJson) {
-        // JSON corrompido: informa o problema sem sobrescrever os dados
+        // JSON corrompido: informa o problema sem sobrescrever os dados.
         throw {
             tipo: "json_invalido",
             mensagem: "O conteúdo salvo no localStorage não é um JSON válido e não pode ser lido. " +
@@ -94,7 +119,7 @@ TechTrack.carregarDados = function () {
         };
     }
 
-    // 5. Validar a estrutura recuperada
+    // 5. Validar a estrutura recuperada.
     var resultado = TechTrack.validarEstrutura(objeto);
     if (!resultado.valido) {
         throw {
@@ -105,7 +130,7 @@ TechTrack.carregarDados = function () {
         };
     }
 
-    // 6. Retornar o objeto validado
+    // 6. Retornar o objeto validado.
     return objeto;
 };
 
@@ -117,11 +142,12 @@ TechTrack.carregarDados = function () {
  * Valida e salva o objeto de dados no localStorage.
  *
  * Fluxo de execução:
- *   1. Verifica se o localStorage está disponível.
+ *   1. Tenta acessar window.localStorage.
  *   2. Valida a estrutura do objeto recebido.
  *   3. Atualiza o campo atualizadoEm com o momento atual.
  *   4. Converte o objeto para texto JSON com JSON.stringify.
- *   5. Salva o texto no localStorage.
+ *   5. Tenta salvar via setItem — identifica QuotaExceededError
+ *      pelos campos name e code do erro, sem inspecionar a mensagem.
  *   6. Retorna o objeto salvo.
  *
  * @param {object} dados - Objeto completo com a estrutura do sistema.
@@ -129,16 +155,22 @@ TechTrack.carregarDados = function () {
  * @throws {object} Descrição do erro encontrado.
  */
 TechTrack.salvarDados = function (dados) {
-    // 1. Verificar se o localStorage está disponível
-    if (!TechTrack._localStorageDisponivel()) {
+    // 1. Verificar acesso ao localStorage sem escrita prévia.
+    var storage = null;
+    try {
+        storage = window.localStorage;
+        if (!storage) {
+            throw new TypeError("window.localStorage não existe neste ambiente.");
+        }
+    } catch (erroAcesso) {
         throw {
             tipo: "localStorage_indisponivel",
-            mensagem: "O localStorage não está disponível neste ambiente.",
+            mensagem: "Não foi possível acessar o localStorage para gravação. Detalhe: " + erroAcesso.message,
             conteudoOriginal: null
         };
     }
 
-    // 2. Validar a estrutura antes de qualquer alteração
+    // 2. Validar a estrutura antes de qualquer alteração.
     var resultado = TechTrack.validarEstrutura(dados);
     if (!resultado.valido) {
         throw {
@@ -148,10 +180,10 @@ TechTrack.salvarDados = function (dados) {
         };
     }
 
-    // 3. Atualizar o campo de data/hora da última gravação
+    // 3. Atualizar o campo de data/hora da última gravação.
     dados.atualizadoEm = TechTrack.obterDataHoraAtual();
 
-    // 4. Converter o objeto JavaScript para texto JSON
+    // 4. Converter o objeto JavaScript para texto JSON.
     var textoJson = null;
     try {
         textoJson = JSON.stringify(dados);
@@ -163,16 +195,17 @@ TechTrack.salvarDados = function (dados) {
         };
     }
 
-    // 5. Salvar no localStorage
+    // 5. Salvar no localStorage.
+    //    QuotaExceededError é identificado pelo nome do erro (padrão W3C)
+    //    ou pelo código numérico 22 (compatibilidade com navegadores antigos).
+    //    Erros de permissão/contexto têm name diferente (SecurityError, etc.)
+    //    e são reportados separadamente.
     try {
-        localStorage.setItem(TechTrack.CHAVE_ARMAZENAMENTO, textoJson);
+        storage.setItem(TechTrack.CHAVE_ARMAZENAMENTO, textoJson);
     } catch (erroGravacao) {
-        // O erro mais comum aqui é quota excedida (~5 MB por origem)
-        var mensagemErro = erroGravacao.message || "";
         var ehLimiteExcedido = (
-            mensagemErro.toLowerCase().indexOf("quota") !== -1 ||
-            mensagemErro.toLowerCase().indexOf("storage") !== -1 ||
             erroGravacao.name === "QuotaExceededError" ||
+            erroGravacao.name === "NS_ERROR_DOM_QUOTA_REACHED" ||
             erroGravacao.code === 22
         );
 
@@ -185,6 +218,7 @@ TechTrack.salvarDados = function (dados) {
             };
         }
 
+        // Erro de permissão, contexto restrito ou outro erro de gravação.
         throw {
             tipo: "erro_gravacao",
             mensagem: "Não foi possível gravar os dados no localStorage. Detalhe: " + erroGravacao.message,
@@ -192,30 +226,6 @@ TechTrack.salvarDados = function (dados) {
         };
     }
 
-    // 6. Retornar o objeto salvo
+    // 6. Retornar o objeto salvo.
     return dados;
-};
-
-// ─────────────────────────────────────────────
-// Auxiliar interno
-// ─────────────────────────────────────────────
-
-/**
- * Verifica se o localStorage está disponível e funcional.
- *
- * Alguns ambientes (modo privado de certos navegadores, iframes com
- * restrições, Node.js) não oferecem localStorage. Esta função testa
- * a disponibilidade escrevendo e apagando uma chave temporária.
- *
- * @returns {boolean} true se o localStorage estiver disponível.
- */
-TechTrack._localStorageDisponivel = function () {
-    try {
-        var chavesTeste = "__techtrack_teste__";
-        localStorage.setItem(chavesTeste, "1");
-        localStorage.removeItem(chavesTeste);
-        return true;
-    } catch (e) {
-        return false;
-    }
 };

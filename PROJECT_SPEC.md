@@ -672,9 +672,8 @@ Todos os registros ficam dentro de `dados`. Nenhum indicador calculado é armaze
 | `TechTrack.validarEstrutura(obj)` | dados.js | Retorna `{ valido, erro }` |
 | `TechTrack.gerarId()` | funcoes.js | Retorna string única combinando `Date.now` e `Math.random` |
 | `TechTrack.obterDataHoraAtual()` | funcoes.js | Retorna `new Date().toISOString()` |
-| `TechTrack.carregarDados()` | armazenamento.js | Lê, parseia, valida e retorna o objeto; inicializa se vazio |
-| `TechTrack.salvarDados(dados)` | armazenamento.js | Valida, atualiza `atualizadoEm`, serializa e grava |
-| `TechTrack._localStorageDisponivel()` | armazenamento.js | Verifica disponibilidade do storage com write/read teste |
+| `TechTrack.carregarDados()` | armazenamento.js | Acessa `window.localStorage` diretamente, lê via `getItem`, parseia, valida e retorna |
+| `TechTrack.salvarDados(dados)` | armazenamento.js | Valida, atualiza `atualizadoEm`, serializa e grava via `setItem` |
 
 ### Validações estruturais implementadas em `validarEstrutura`
 
@@ -696,15 +695,19 @@ Todos os erros são lançados como objetos com a estrutura:
 
 | Tipo de erro | Situação |
 |---|---|
-| `localStorage_indisponivel` | API ausente ou bloqueada (modo privado restrito) |
+| `localStorage_indisponivel` | Acesso a `window.localStorage` lança exceção (SecurityError, TypeError) |
 | `erro_leitura` | `localStorage.getItem` lançou exceção |
 | `json_invalido` | `JSON.parse` falhou; `conteudoOriginal` preserva o texto bruto |
 | `estrutura_invalida` | `validarEstrutura` retornou `valido: false` |
 | `erro_serializacao` | `JSON.stringify` falhou |
-| `limite_armazenamento` | `QuotaExceededError` ou código 22 |
-| `erro_gravacao` | `localStorage.setItem` lançou outra exceção |
+| `limite_armazenamento` | Erro com `name === "QuotaExceededError"`, `name === "NS_ERROR_DOM_QUOTA_REACHED"` ou `code === 22` |
+| `erro_gravacao` | `localStorage.setItem` lançou outra exceção (permissão, contexto restrito etc.) |
 
 **Regra fundamental:** nenhum erro apaga automaticamente os dados existentes. Em caso de JSON corrompido ou estrutura incompatível, o conteúdo original é preservado e retornado no campo `conteudoOriginal` do erro.
+
+**Separação de leitura e escrita:** `carregarDados()` testa apenas o acesso a `window.localStorage` (sem nenhum `setItem`), permitindo a leitura mesmo quando o armazenamento está cheio. `salvarDados()` trata os erros de escrita diretamente no `setItem`, sem verificação prévia com escrita temporária.
+
+**Identificação precisa de QuotaExceededError:** o erro é reconhecido pelos campos `name` e `code` do objeto de erro, não pela mensagem textual, evitando falsos positivos.
 
 ### Ordem de carregamento dos scripts
 
@@ -725,18 +728,28 @@ Os scripts de funcionalidades específicas (dashboard.js, equipamentos.js, etc.)
 - **Sem async/await:** o `localStorage` é síncrono; `async/await` será introduzido na etapa de backup, quando a leitura de arquivo for genuinamente assíncrona.
 - **Erros como objetos descritivos:** em vez de lançar `new Error(mensagem)`, os erros são objetos com `tipo`, `mensagem` e `conteudoOriginal`. Isso facilita o tratamento programático (verificar `erro.tipo`) e a exibição de mensagens úteis ao usuário.
 - **Nomes em português:** todas as funções e variáveis seguem a convenção do projeto, em português brasileiro, para facilitar a leitura e a apresentação.
+- **Leitura e escrita verificadas separadamente (Etapa 03.1):** `carregarDados()` testa disponibilidade acessando `window.localStorage` sem `setItem`, preservando a leitura quando o armazenamento está cheio. `salvarDados()` trata os erros de escrita diretamente, sem verificação prévia com escrita temporária. `QuotaExceededError` é identificado por `name` e `code`, não por texto da mensagem.
 
 ### Testes executados (Node.js)
 
-41 testes automatizados passaram com sucesso:
+41 testes na Etapa 03 + 24 testes na Etapa 03.1, todos passaram com sucesso.
 
-- **Teste 1 — Primeira inicialização:** estrutura criada corretamente com 5 arrays vazios.
-- **Teste 2 — Persistência:** salvar e reler mantém a estrutura íntegra.
-- **Teste 3 — Conversão JSON:** `JSON.stringify` e `JSON.parse` preservam todos os campos.
-- **Teste 4 — Estrutura inválida:** `salvarDados` rejeita objeto sem coleção obrigatória; storage não é alterado.
-- **Teste 5 — JSON corrompido:** `carregarDados` lança erro com `tipo: "json_invalido"` e preserva o conteúdo original.
-- **Teste 6 — Identificadores únicos:** 100 IDs gerados em sequência são todos distintos.
-- **Teste bônus — validarEstrutura:** 6 casos de borda verificados (null, versão errada, data inválida, id vazio, etc.).
-- **Teste bônus — obterDataHoraAtual:** formato ISO 8601 com T e Z, parseável por `new Date()`.
+**Etapa 03 (41 testes):**
+- Primeira inicialização com 5 arrays vazios.
+- Persistência após salvar e reler.
+- Conversão JSON (stringify/parse).
+- Rejeição de estrutura inválida sem tocar nos dados anteriores.
+- JSON corrompido com preservação do conteúdo original.
+- 100 IDs gerados sem colisão.
+- 6 casos de borda na validação estrutural.
+- Formato ISO 8601 do timestamp.
 
-*Última atualização: Etapa 03 — Modelagem de dados e localStorage.*
+**Etapa 03.1 (24 testes):**
+- **Teste A:** leitura com storage cheio — `carregarDados()` recupera dados normalmente quando `getItem` funciona, mesmo que `setItem` esteja bloqueado.
+- **Teste B:** escrita com storage cheio — `salvarDados()` retorna `limite_armazenamento` sem alterar o conteúdo anterior.
+- **Teste C:** storage totalmente indisponível — ambas as funções retornam `localStorage_indisponivel`.
+- **Teste D:** fluxo normal íntegro — inicialização, gravação e releitura funcionam corretamente.
+- **Teste E:** JSON corrompido — conteúdo original preservado, storage não sobrescrito.
+- **Teste extra:** `QuotaExceededError` identificado por `code === 22` (compatibilidade com navegadores antigos).
+
+*Última atualização: Etapa 03.1 — Refinamento do armazenamento local.*
