@@ -38,7 +38,7 @@ TechTrack/
 ├── relatorios.html         # Relatórios e backup
 │
 ├── css/
-│   └── style.css           # Estilos globais, layout e responsividade
+│   └── style.css           # Estilos globais, layout e responsividade ✅
 │
 ├── js/
 │   ├── armazenamento.js    # Leitura e escrita no localStorage
@@ -86,7 +86,7 @@ TechTrack/
 | 00    | Fundação e documentação                          | ✅ Concluída    |
 | 00.1  | Alinhamento documental                           | ✅ Concluída    |
 | 01    | Estrutura HTML e navegação                       | ✅ Concluída    |
-| 02    | Identidade visual e CSS responsivo               | 🔧 Pendente    |
+| 02    | Identidade visual e CSS responsivo               | ✅ Concluída    |
 | 03    | Modelagem de dados e localStorage                | 🔧 Pendente    |
 | 04    | CRUD de equipamentos                             | 🔧 Pendente    |
 | 05    | CRUD de locais e técnicos                        | 🔧 Pendente    |
@@ -113,7 +113,7 @@ A forma recomendada é usar um servidor estático local, como a extensão **Live
 
 A abertura direta via `file://` (clicando duas vezes no arquivo) pode funcionar na maioria dos navegadores, mas o comportamento do localStorage pode variar. Recomenda-se o servidor estático local para evitar inconsistências.
 
-> **Nota:** nas etapas atuais, as páginas HTML existem mas o CSS e o JavaScript ainda não foram criados. A aparência e as funcionalidades serão adicionadas nas etapas 02 em diante.
+> **Situação atual (Etapa 02 concluída):** as páginas HTML existem com identidade visual completa. O JavaScript ainda não foi implementado — os dados e funcionalidades serão adicionados nas etapas 03 em diante.
 
 ---
 

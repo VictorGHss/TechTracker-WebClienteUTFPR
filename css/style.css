@@ -1,0 +1,971 @@
+/* ==========================================================================
+   TechTrack — Folha de estilos principal
+   Projeto acadêmico UTFPR — Desenvolvimento Web
+   ==========================================================================
+
+   Organização:
+   1.  Reset e estilos gerais
+   2.  Variáveis de cor e tipografia
+   3.  Layout principal
+   4.  Navegação
+   5.  Cabeçalhos de página
+   6.  Cards e indicadores (dashboard)
+   7.  Formulários e controles
+   8.  Tabelas
+   9.  Detalhes do equipamento
+   10. Mensagens e estados
+   11. Rodapé
+   12. Responsividade (tablets e celulares)
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. RESET E ESTILOS GERAIS
+   Zera margens e paddings padrão do navegador e define o box-sizing.
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--cor-texto);
+  background-color: var(--cor-fundo);
+  /* Flexbox: coloca nav lateral e conteúdo lado a lado */
+  display: flex;
+  min-height: 100vh;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--cor-azul);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+/* Garante que o atributo hidden do HTML seja sempre respeitado,
+   mesmo quando outras regras CSS tentarem tornar o elemento visível */
+[hidden] {
+  display: none !important;
+}
+
+/* Textos visíveis apenas para leitores de tela */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* ==========================================================================
+   2. VARIÁVEIS DE COR E TIPOGRAFIA
+   Centralizadas em :root para facilitar manutenção e explicação.
+   ========================================================================== */
+
+:root {
+  /* Paleta principal */
+  --cor-fundo:        #F1F5F9;
+  --cor-superficie:   #FFFFFF;
+  --cor-azul:         #2563EB;
+  --cor-azul-escuro:  #1E40AF;
+  --cor-azul-suave:   #EFF6FF;
+  --cor-borda:        #E2E8F0;
+
+  /* Texto */
+  --cor-texto:        #334155;
+  --cor-texto-sec:    #64748B;
+
+  /* Feedback */
+  --cor-sucesso:      #16A34A;
+  --cor-atencao:      #D97706;
+  --cor-erro:         #DC2626;
+
+  /* Cores de fundo para feedback */
+  --cor-sucesso-bg:   #F0FDF4;
+  --cor-atencao-bg:   #FFFBEB;
+  --cor-erro-bg:      #FEF2F2;
+
+  /* Navegação */
+  --nav-largura:      240px;
+  --nav-fundo:        #1E293B;
+  --nav-texto:        #CBD5E1;
+  --nav-ativo-bg:     #2563EB;
+  --nav-ativo-texto:  #FFFFFF;
+  --nav-hover-bg:     #334155;
+
+  /* Espaçamentos */
+  --espaco-xs:  0.25rem;   /*  4px */
+  --espaco-sm:  0.5rem;    /*  8px */
+  --espaco-md:  1rem;      /* 16px */
+  --espaco-lg:  1.5rem;    /* 24px */
+  --espaco-xl:  2rem;      /* 32px */
+
+  /* Visuais */
+  --raio-borda:    6px;
+  --sombra-card:   0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --sombra-nav:    2px 0 8px rgba(0, 0, 0, 0.12);
+}
+
+
+/* ==========================================================================
+   3. LAYOUT PRINCIPAL
+   Usa Flexbox para organizar nav lateral + área de conteúdo lado a lado.
+   ========================================================================== */
+
+/* Área que envolve o cabeçalho da página, main e footer */
+.pagina-wrapper {
+  flex: 1;                    /* Ocupa o espaço restante após a nav */
+  display: flex;
+  flex-direction: column;     /* Empilha cabeçalho, main e footer */
+  min-width: 0;               /* Evita overflow em conteúdo grande */
+  overflow-x: hidden;
+}
+
+/* Conteúdo principal: ocupa todo o espaço disponível entre cabeçalho e rodapé */
+#conteudo-principal {
+  flex: 1;
+  padding: var(--espaco-lg) var(--espaco-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xl);
+}
+
+
+/* ==========================================================================
+   4. NAVEGAÇÃO LATERAL
+   Menu fixo à esquerda com fundo escuro e links claros.
+   ========================================================================== */
+
+#nav-principal {
+  width: var(--nav-largura);
+  min-width: var(--nav-largura);
+  background-color: var(--nav-fundo);
+  box-shadow: var(--sombra-nav);
+  display: flex;
+  flex-direction: column;
+  /* Fica fixo ao rolar a página principal */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* Cabeçalho interno da nav: logo e subtítulo */
+.nav-cabecalho {
+  padding: var(--espaco-lg) var(--espaco-md);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav-logo {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  letter-spacing: 0.03em;
+}
+
+.nav-subtitulo {
+  font-size: 0.75rem;
+  color: var(--nav-texto);
+  margin-top: var(--espaco-xs);
+  opacity: 0.7;
+}
+
+/* Lista de links */
+.nav-lista {
+  padding: var(--espaco-sm) 0;
+  flex: 1;
+}
+
+.nav-item {
+  margin: var(--espaco-xs) 0;
+}
+
+.nav-link {
+  display: block;
+  padding: var(--espaco-sm) var(--espaco-md);
+  color: var(--nav-texto);
+  text-decoration: none;
+  border-radius: 0;
+  font-size: 0.9rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  border-left: 3px solid transparent;
+}
+
+.nav-link:hover {
+  background-color: var(--nav-hover-bg);
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+/* Link da página atual — estilo ativo */
+.nav-link[aria-current="page"] {
+  background-color: var(--nav-ativo-bg);
+  color: var(--nav-ativo-texto);
+  border-left-color: #93C5FD;
+  font-weight: bold;
+}
+
+.nav-link[aria-current="page"]:hover {
+  background-color: var(--cor-azul-escuro);
+}
+
+
+/* ==========================================================================
+   5. CABEÇALHOS DE PÁGINA
+   Faixa superior de cada página com título e descrição.
+   ========================================================================== */
+
+.pagina-cabecalho {
+  padding: var(--espaco-lg) var(--espaco-xl);
+  background-color: var(--cor-superficie);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.pagina-titulo {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--cor-texto);
+  margin-bottom: var(--espaco-xs);
+}
+
+.pagina-descricao {
+  font-size: 0.875rem;
+  color: var(--cor-texto-sec);
+}
+
+/* Títulos de seção dentro do main */
+#conteudo-principal h3 {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--cor-texto);
+  margin-bottom: var(--espaco-md);
+  padding-bottom: var(--espaco-sm);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.secao-descricao {
+  font-size: 0.875rem;
+  color: var(--cor-texto-sec);
+  margin-bottom: var(--espaco-md);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-xs);
+  align-items: center;
+  margin-bottom: var(--espaco-sm);
+  font-size: 0.8rem;
+  color: var(--cor-texto-sec);
+  list-style: none;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: "›";
+  margin-right: var(--espaco-xs);
+  color: var(--cor-texto-sec);
+}
+
+.breadcrumb-item a {
+  color: var(--cor-azul);
+}
+
+.breadcrumb-atual {
+  color: var(--cor-texto-sec);
+}
+
+
+/* ==========================================================================
+   6. CARDS E INDICADORES (DASHBOARD)
+   Cards com um número grande e um rótulo descritivo.
+   ========================================================================== */
+
+/* Seção dos indicadores no dashboard */
+#indicadores-equipamentos,
+#indicadores-manutencoes,
+#alertas {
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-lg);
+  box-shadow: var(--sombra-card);
+}
+
+/* Grade de cards dentro da seção */
+.lista-indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--espaco-md);
+  list-style: none;
+}
+
+/* Card individual */
+.card-indicador {
+  background-color: var(--cor-azul-suave);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-md) var(--espaco-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--espaco-xs);
+}
+
+/* Número / valor do indicador */
+.indicador-valor {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--cor-azul);
+  line-height: 1.1;
+}
+
+/* Rótulo descritivo abaixo do número */
+.indicador-label {
+  font-size: 0.8rem;
+  color: var(--cor-texto-sec);
+  line-height: 1.3;
+}
+
+/* Alertas: destaque sutil diferente dos indicadores normais */
+#alertas .card-indicador {
+  background-color: var(--cor-atencao-bg);
+  border-color: #FDE68A;
+}
+
+#alertas .indicador-valor {
+  color: var(--cor-atencao);
+}
+
+/* Seção de atividades recentes */
+#atividades-recentes {
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-lg);
+  box-shadow: var(--sombra-card);
+}
+
+/* Lista de eventos */
+.lista-eventos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+}
+
+.lista-eventos li {
+  padding: var(--espaco-sm) var(--espaco-md);
+  background-color: var(--cor-fundo);
+  border-left: 3px solid var(--cor-azul);
+  border-radius: 0 var(--raio-borda) var(--raio-borda) 0;
+  font-size: 0.875rem;
+  color: var(--cor-texto);
+}
+
+
+/* ==========================================================================
+   7. FORMULÁRIOS E CONTROLES
+   Estilização uniforme para inputs, selects, labels e botões.
+   ========================================================================== */
+
+/* Barra de ações: pesquisa + filtros + botão */
+#barra-acoes {
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-md) var(--espaco-lg);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espaco-md);
+  box-shadow: var(--sombra-card);
+}
+
+.acoes-busca,
+.acoes-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espaco-md);
+  flex: 1;
+}
+
+.acoes-busca {
+  min-width: 220px;
+}
+
+.acoes-botoes {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--espaco-sm);
+  margin-left: auto;
+}
+
+/* Ações dentro de seções (cadastros.html) */
+.secao-acoes {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--espaco-md);
+}
+
+/* Labels */
+label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--cor-texto-sec);
+  margin-bottom: var(--espaco-xs);
+}
+
+/* Inputs e selects */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="number"],
+input[type="date"],
+input[type="file"],
+select,
+textarea {
+  display: block;
+  width: 100%;
+  padding: var(--espaco-sm) var(--espaco-md);
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--cor-texto);
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="text"]:focus,
+input[type="search"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--cor-azul);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Campos e controles desabilitados — claramente não interativos */
+input:disabled,
+select:disabled,
+textarea:disabled,
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background-color: var(--cor-fundo);
+}
+
+/* Botões */
+button,
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-xs);
+  padding: var(--espaco-sm) var(--espaco-lg);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  background-color: var(--cor-azul);
+  border: 1px solid var(--cor-azul);
+  border-radius: var(--raio-borda);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+
+button:hover:not(:disabled),
+.btn:hover {
+  background-color: var(--cor-azul-escuro);
+  border-color: var(--cor-azul-escuro);
+  text-decoration: none;
+}
+
+button:focus-visible,
+.btn:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--cor-azul);
+  outline-offset: 2px;
+}
+
+/* Variante secundária (pode ser aplicada pelo JS futuramente) */
+.btn-secundario {
+  color: var(--cor-texto);
+  background-color: var(--cor-superficie);
+  border-color: var(--cor-borda);
+}
+
+.btn-secundario:hover:not(:disabled) {
+  background-color: var(--cor-fundo);
+  border-color: #94A3B8;
+}
+
+/* Variante de perigo */
+.btn-perigo {
+  background-color: var(--cor-erro);
+  border-color: var(--cor-erro);
+}
+
+.btn-perigo:hover:not(:disabled) {
+  background-color: #B91C1C;
+  border-color: #B91C1C;
+}
+
+/* Campo de arquivo de backup */
+input[type="file"] {
+  padding: var(--espaco-sm);
+  cursor: pointer;
+}
+
+/* Painel de formulário embutido */
+#painel-formulario-equipamento,
+#painel-formulario-manutencao,
+#painel-formulario-local,
+#painel-formulario-tecnico {
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-lg);
+  box-shadow: var(--sombra-card);
+}
+
+/* Áreas de exportação e importação de backup */
+#area-exportacao,
+#area-importacao {
+  background-color: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-md);
+}
+
+#area-exportacao h4,
+#area-importacao h4 {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: var(--cor-texto);
+}
+
+
+/* ==========================================================================
+   8. TABELAS
+   Tabelas com bordas, cabeçalho destacado e linhas alternadas para leitura.
+   ========================================================================== */
+
+/* Wrapper permite rolagem horizontal em telas pequenas
+   sem causar overflow na página inteira */
+.tabela-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--raio-borda);
+  border: 1px solid var(--cor-borda);
+  box-shadow: var(--sombra-card);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--cor-superficie);
+  font-size: 0.875rem;
+}
+
+/* Cabeçalho da tabela */
+thead {
+  background-color: var(--cor-fundo);
+  border-bottom: 2px solid var(--cor-borda);
+}
+
+th {
+  padding: var(--espaco-sm) var(--espaco-md);
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--cor-texto-sec);
+  white-space: nowrap;
+}
+
+/* Células de dados */
+td {
+  padding: var(--espaco-sm) var(--espaco-md);
+  color: var(--cor-texto);
+  border-bottom: 1px solid var(--cor-borda);
+  vertical-align: middle;
+}
+
+/* Última linha sem borda inferior */
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Linhas alternadas para facilitar a leitura */
+tbody tr:nth-child(even) {
+  background-color: #F8FAFC;
+}
+
+tbody tr:hover {
+  background-color: var(--cor-azul-suave);
+}
+
+
+/* ==========================================================================
+   9. DETALHES DO EQUIPAMENTO
+   Estilos para o article de detalhes e as listas de definição (dl/dt/dd).
+   ========================================================================== */
+
+/* Container principal do artigo de detalhes */
+#detalhes-equipamento {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-lg);
+}
+
+/* Cada seção de detalhes (Identificação, Localização, Situação...) */
+#detalhes-equipamento section {
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-lg);
+  box-shadow: var(--sombra-card);
+}
+
+/* Lista de dados: pares label / valor */
+.lista-dados {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--espaco-sm) var(--espaco-md);
+  align-items: baseline;
+}
+
+.lista-dados dt {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--cor-texto-sec);
+}
+
+.lista-dados dd {
+  font-size: 0.9rem;
+  color: var(--cor-texto);
+}
+
+/* Seções internas do artigo de detalhes não herdam o estilo do main h3 */
+#detalhes-equipamento h3 {
+  border-bottom: none;
+  margin-bottom: var(--espaco-md);
+  padding-bottom: 0;
+  font-size: 0.95rem;
+  color: var(--cor-azul-escuro);
+}
+
+
+/* ==========================================================================
+   10. MENSAGENS E ESTADOS
+   Mensagem de estado vazio, alertas de sucesso/erro e badges de situação.
+   ========================================================================== */
+
+/* Estado vazio: exibido quando não há dados */
+.estado-vazio {
+  padding: var(--espaco-xl);
+  text-align: center;
+  color: var(--cor-texto-sec);
+  font-size: 0.9rem;
+  background-color: var(--cor-fundo);
+  border: 1px dashed var(--cor-borda);
+  border-radius: var(--raio-borda);
+}
+
+.estado-vazio a {
+  color: var(--cor-azul);
+}
+
+/* Seções de relatório — cada relatório é uma seção separada */
+#relatorio-equipamentos,
+#relatorio-manutencoes,
+#relatorio-custos,
+#relatorio-garantias {
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-lg);
+  box-shadow: var(--sombra-card);
+}
+
+/* Seção de backup */
+#secao-backup {
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-lg);
+  box-shadow: var(--sombra-card);
+}
+
+/* Seções de locais e técnicos */
+#secao-locais,
+#secao-tecnicos {
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  padding: var(--espaco-lg);
+  box-shadow: var(--sombra-card);
+}
+
+/* Badges de situação — aplicados pelo JavaScript nas etapas futuras */
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.badge-operacional  { background-color: #DCFCE7; color: var(--cor-sucesso); }
+.badge-manutencao   { background-color: #FEF9C3; color: #A16207; }
+.badge-inativo      { background-color: #F1F5F9; color: var(--cor-texto-sec); }
+.badge-descartado   { background-color: #FEE2E2; color: var(--cor-erro); }
+.badge-aberta       { background-color: #DBEAFE; color: var(--cor-azul); }
+.badge-andamento    { background-color: #FEF9C3; color: #A16207; }
+.badge-concluida    { background-color: #DCFCE7; color: var(--cor-sucesso); }
+.badge-cancelada    { background-color: #F1F5F9; color: var(--cor-texto-sec); }
+.badge-critica      { background-color: #FEE2E2; color: var(--cor-erro); }
+.badge-alta         { background-color: #FFEDD5; color: #C2410C; }
+.badge-media        { background-color: #FEF9C3; color: #A16207; }
+.badge-baixa        { background-color: #F1F5F9; color: var(--cor-texto-sec); }
+
+
+/* ==========================================================================
+   11. RODAPÉ
+   Rodapé simples com texto centralizado.
+   ========================================================================== */
+
+.pagina-rodape {
+  padding: var(--espaco-md) var(--espaco-xl);
+  background-color: var(--cor-superficie);
+  border-top: 1px solid var(--cor-borda);
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--cor-texto-sec);
+}
+
+
+/* ==========================================================================
+   12. RESPONSIVIDADE
+   Breakpoints:
+   - Desktop: 1024px e acima (layout padrão com nav lateral)
+   - Tablet: 768px a 1023px
+   - Celular: até 767px
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   Tablet — de 768px a 1023px
+   Reduz espaçamentos e mantém a nav lateral, porém mais estreita.
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1023px) {
+  :root {
+    --nav-largura: 200px;
+  }
+
+  .pagina-cabecalho {
+    padding: var(--espaco-md) var(--espaco-lg);
+  }
+
+  #conteudo-principal {
+    padding: var(--espaco-md) var(--espaco-lg);
+    gap: var(--espaco-lg);
+  }
+
+  .lista-indicadores {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+
+  .lista-dados {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   Celular — até 767px
+   Nav lateral vira barra de navegação horizontal no topo.
+   Conteúdo em coluna única.
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 767px) {
+
+  /* O body deixa de ser flexbox horizontal e vira coluna */
+  body {
+    flex-direction: column;
+  }
+
+  /* Nav ocupa toda a largura horizontal no topo */
+  #nav-principal {
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    position: static;        /* Sai do sticky */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Cabeçalho da nav: logo e subtítulo lado a lado */
+  .nav-cabecalho {
+    padding: var(--espaco-sm) var(--espaco-md);
+    display: flex;
+    align-items: baseline;
+    gap: var(--espaco-md);
+  }
+
+  .nav-logo {
+    font-size: 1.1rem;
+  }
+
+  .nav-subtitulo {
+    display: none;    /* Esconde o subtítulo no mobile para economizar espaço */
+  }
+
+  /* Links de navegação em linha horizontal, com quebra de linha se necessário */
+  .nav-lista {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 var(--espaco-sm) var(--espaco-sm);
+    gap: var(--espaco-xs);
+  }
+
+  .nav-item {
+    margin: 0;
+  }
+
+  .nav-link {
+    padding: var(--espaco-xs) var(--espaco-sm);
+    font-size: 0.8rem;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    border-radius: var(--raio-borda) var(--raio-borda) 0 0;
+  }
+
+  .nav-link[aria-current="page"] {
+    border-left-color: transparent;
+    border-bottom-color: #93C5FD;
+  }
+
+  /* Conteúdo com menos espaçamento nas laterais */
+  .pagina-cabecalho {
+    padding: var(--espaco-md);
+  }
+
+  #conteudo-principal {
+    padding: var(--espaco-md);
+    gap: var(--espaco-md);
+  }
+
+  .pagina-rodape {
+    padding: var(--espaco-sm) var(--espaco-md);
+  }
+
+  /* Cards de indicadores: duas colunas no mobile */
+  .lista-indicadores {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .indicador-valor {
+    font-size: 1.5rem;
+  }
+
+  /* Barra de ações: empilhada em coluna */
+  #barra-acoes {
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--espaco-md);
+  }
+
+  .acoes-busca,
+  .acoes-filtros {
+    flex-direction: column;
+  }
+
+  .acoes-botoes {
+    margin-left: 0;
+  }
+
+  /* Lista de dados: coluna única no mobile */
+  .lista-dados {
+    grid-template-columns: 1fr;
+  }
+
+  .lista-dados dt {
+    margin-top: var(--espaco-sm);
+  }
+
+  .lista-dados dt:first-child {
+    margin-top: 0;
+  }
+
+  /* Tabelas: rolagem horizontal interna sem afetar a página */
+  .tabela-wrapper {
+    max-width: 100%;
+  }
+
+  /* Título da página menor no mobile */
+  .pagina-titulo {
+    font-size: 1.1rem;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   Celulares muito pequenos — até 400px
+   Ajustes finos para telas abaixo de 400px.
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 400px) {
+  .lista-indicadores {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-link {
+    font-size: 0.75rem;
+    padding: var(--espaco-xs);
+  }
+}

@@ -532,7 +532,7 @@ techtrack:data:v1
 | 00    | Fundação e documentação                          | ✅ Concluída    |
 | 00.1  | Alinhamento documental                           | ✅ Concluída    |
 | 01    | Estrutura HTML e navegação                       | ✅ Concluída    |
-| 02    | Identidade visual e CSS responsivo               | 🔧 Pendente    |
+| 02    | Identidade visual e CSS responsivo               | ✅ Concluída    |
 | 03    | Modelagem de dados e localStorage                | 🔧 Pendente    |
 | 04    | CRUD de equipamentos                             | 🔧 Pendente    |
 | 05    | CRUD de locais e técnicos                        | 🔧 Pendente    |
@@ -559,4 +559,53 @@ Um servidor estático apenas serve arquivos do disco para o navegador — não p
 - **`aria-current="page"` em `equipamento.html`:** esta página pertence à seção Equipamentos, então o item Equipamentos recebe `aria-current="page"` na navegação. A localização exata é indicada pelo breadcrumb com `aria-current="location"`.
 - **Scripts com `defer`:** todos os arquivos JavaScript são carregados com `defer`, o que garante que o HTML esteja completamente parseado antes da execução dos scripts.
 
-*Última atualização: Etapa 01 — Estrutura HTML e navegação.*
+---
+
+## 20. Notas técnicas da Etapa 02
+
+### Arquivo CSS criado
+
+`css/style.css` — arquivo único com 12 seções comentadas, 971 linhas, 23 KB.
+
+### Estrutura de pastas atualizada
+
+```
+TechTrack/
+│
+├── index.html
+├── equipamentos.html
+├── equipamento.html
+├── manutencoes.html
+├── cadastros.html
+├── relatorios.html
+│
+├── css/
+│   └── style.css        ← criado na Etapa 02
+│
+├── js/                  ← criado a partir da Etapa 03
+│   └── ...
+│
+└── assets/
+    └── imagens/
+```
+
+### Decisões visuais
+
+- **Navegação lateral escura** (`#1E293B`): contraste alto com os links claros (`#CBD5E1`), link ativo destacado em azul (`#2563EB`) com borda lateral esquerda.
+- **Fundo de página em cinza claro** (`#F1F5F9`): superfícies brancas (`#FFFFFF`) se destacam naturalmente sobre o fundo, criando hierarquia visual sem bordas pesadas.
+- **Cards de indicadores em azul suave** (`#EFF6FF`): distinguem visualmente os indicadores do fundo das seções sem usar cores saturadas.
+- **Alertas em amarelo suave** (`#FFFBEB`): diferenciação visual das manutenções atrasadas e garantias vencendo.
+- **Badges de situação e prioridade** preparados para uso pelo JavaScript nas etapas futuras (`.badge-operacional`, `.badge-critica` etc.).
+- **Tabelas com rolagem horizontal interna** via `.tabela-wrapper { overflow-x: auto }`: evita quebra de layout em telas pequenas.
+- **`[hidden]` com `!important`**: garante que elementos ocultos permaneçam assim mesmo com outras regras CSS de exibição.
+
+### Breakpoints implementados
+
+| Breakpoint | Faixa | Comportamento |
+|---|---|---|
+| Desktop | ≥ 1024px | Nav lateral sticky (240px), layout em duas colunas |
+| Tablet | 768px – 1023px | Nav lateral estreita (200px), espaçamentos reduzidos |
+| Mobile | ≤ 767px | Nav horizontal no topo, cards em 2 colunas, listas em 1 coluna |
+| Mobile pequeno | ≤ 400px | Cards em 1 coluna, links da nav menores |
+
+*Última atualização: Etapa 02 — Identidade visual e CSS responsivo.*

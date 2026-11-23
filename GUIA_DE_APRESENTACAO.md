@@ -263,9 +263,205 @@ A alternativa seria uma SPA (*Single-Page Application*), onde há apenas um HTML
 
 ---
 
-### 6.2 Dashboard
+### 6.2 Identidade visual e CSS ✅ Etapa 02
 
-*A ser preenchido na etapa 07 — Dashboard e histórico.*
+#### O que é CSS?
+
+CSS significa *Cascading Style Sheets* — Folhas de Estilo em Cascata. É a linguagem que define a aparência do HTML: cores, tamanhos, espaçamentos, posições e comportamento visual.
+
+Enquanto o HTML define **o que** existe na página, o CSS define **como** isso aparece.
+
+Exemplo direto do projeto:
+
+```css
+/* Define a cor de fundo da página e a fonte */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+}
+```
+
+#### Variáveis CSS (`:root`)
+
+Para não repetir as mesmas cores e tamanhos em vários lugares, o TechTrack usa variáveis CSS. Elas são definidas uma vez em `:root` e usadas em todo o arquivo com `var(--nome)`.
+
+```css
+:root {
+  --cor-azul:       #2563EB;
+  --cor-fundo:      #F1F5F9;
+  --cor-superficie: #FFFFFF;
+  --espaco-md:      1rem;    /* 16px */
+}
+
+/* Uso: */
+.nav-link[aria-current="page"] {
+  background-color: var(--cor-azul);
+  color: #FFFFFF;
+}
+```
+
+**Por que usar variáveis?** Se precisar mudar a cor azul do sistema, basta alterar em um lugar — `:root` — e a mudança se aplica em todo o CSS automaticamente.
+
+#### Box Model
+
+Todo elemento HTML é uma caixa com quatro camadas:
+
+```
++---------------------------+
+|        margin             |  ← espaço externo (fora da borda)
+|  +---------------------+  |
+|  |      border         |  |  ← borda
+|  |  +---------------+  |  |
+|  |  |    padding    |  |  |  ← espaço interno (entre borda e conteúdo)
+|  |  |  +---------+  |  |  |
+|  |  |  | conteúdo|  |  |  |
+|  |  |  +---------+  |  |  |
+|  |  +---------------+  |  |
+|  +---------------------+  |
++---------------------------+
+```
+
+No TechTrack, `box-sizing: border-box` faz com que o `padding` e a `border` sejam incluídos dentro da largura declarada — sem isso, adicionar padding aumentaria o tamanho do elemento além do esperado.
+
+#### Flexbox — como foi usado
+
+Flexbox organiza elementos em uma linha ou coluna, distribuindo o espaço entre eles. O TechTrack usa Flexbox em três lugares principais:
+
+**1. Layout geral da página (nav + conteúdo lado a lado):**
+
+```css
+body {
+  display: flex;        /* Ativa o Flexbox */
+  min-height: 100vh;    /* Ocupa toda a altura da tela */
+}
+
+.pagina-wrapper {
+  flex: 1;   /* Ocupa todo o espaço restante após a nav */
+}
+```
+
+**2. Navegação lateral (itens empilhados em coluna):**
+
+```css
+#nav-principal {
+  display: flex;
+  flex-direction: column;  /* Logo em cima, links embaixo */
+  width: 240px;
+  position: sticky;        /* Fica fixo ao rolar a página */
+  height: 100vh;
+}
+```
+
+**3. Barra de ações (pesquisa + filtros + botão em linha):**
+
+```css
+#barra-acoes {
+  display: flex;
+  flex-wrap: wrap;       /* Quebra linha se não couber */
+  align-items: flex-end; /* Alinha tudo pela base */
+  gap: var(--espaco-md);
+}
+```
+
+#### Grid — como foi usado
+
+CSS Grid organiza elementos em grades bidimensionais (linhas e colunas). O TechTrack usa Grid nos cards de indicadores e nos dados de detalhes do equipamento.
+
+**Cards de indicadores do dashboard:**
+
+```css
+.lista-indicadores {
+  display: grid;
+  /* Cria colunas automáticas: cada uma com no mínimo 160px,
+     e o restante do espaço é dividido igualmente */
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--espaco-md);
+}
+```
+
+**Dados de detalhes do equipamento (rótulo + valor):**
+
+```css
+.lista-dados {
+  display: grid;
+  grid-template-columns: 1fr 2fr;  /* Rótulo ocupa 1 parte, valor ocupa 2 */
+  gap: var(--espaco-sm) var(--espaco-md);
+}
+```
+
+#### Media Queries — como funcionam
+
+Media Queries permitem aplicar estilos diferentes dependendo do tamanho da tela. O TechTrack tem três breakpoints:
+
+```css
+/* Tablet: tela até 1023px */
+@media (max-width: 1023px) {
+  :root {
+    --nav-largura: 200px; /* Nav um pouco mais estreita */
+  }
+  #conteudo-principal {
+    padding: var(--espaco-md) var(--espaco-lg); /* Menos espaço lateral */
+  }
+}
+
+/* Celular: tela até 767px */
+@media (max-width: 767px) {
+  body {
+    flex-direction: column; /* Nav vai para cima, conteúdo fica abaixo */
+  }
+  #nav-principal {
+    width: 100%;
+    height: auto;
+    position: static; /* Sai do sticky */
+  }
+  .nav-lista {
+    display: flex;    /* Links viram linha horizontal */
+    flex-wrap: wrap;
+  }
+}
+```
+
+**Como o layout se adapta ao celular:** a nav lateral (que fica à esquerda no desktop) vira uma barra horizontal no topo. Os cards de indicadores, que ficam em 3 colunas no desktop, passam para 2 colunas. As listas de dados passam de 2 para 1 coluna.
+
+#### Como as classes CSS são aplicadas ao HTML
+
+No HTML, cada elemento recebe um `class` ou `id`. No CSS, escrevemos regras que selecionam esses elementos.
+
+```html
+<!-- HTML: elemento com classe "card-indicador" -->
+<li class="card-indicador">
+  <span class="indicador-valor">—</span>
+  <span class="indicador-label">Total cadastrado</span>
+</li>
+```
+
+```css
+/* CSS: regra que estiliza qualquer elemento com essa classe */
+.card-indicador {
+  background-color: var(--cor-azul-suave);
+  border: 1px solid var(--cor-borda);
+  border-radius: 6px;         /* Cantos arredondados */
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+```
+
+#### Conteúdo das aulas relacionado (aulas 4, 5.1, 5.2 e 6)
+
+| Conceito da aula | Onde aparece no TechTrack |
+|---|---|
+| Introdução ao CSS — seletores, propriedades | Todas as 971 linhas do `style.css` |
+| Box Model — margin, padding, border | Reset com `box-sizing`, espaçamentos com `--espaco-*` |
+| Display — block, flex, grid | Layout da página, cards, barra de ações |
+| Flexbox | Nav lateral, layout body, barra de ações |
+| Grid | Cards de indicadores, lista de dados |
+| Pseudo-classes — :hover, :focus, :disabled | Links, botões, campos de formulário |
+| Variáveis CSS | Paleta centralizada em `:root` |
+| Media Queries e Viewport | Breakpoints de 1023px, 767px e 400px |
 
 ### 6.3 Equipamentos
 
@@ -532,7 +728,7 @@ Usar Bootstrap ou Tailwind geraria o estilo automaticamente, mas o código CSS r
 | 00    | Fundação e documentação                          | ✅ Concluída    |
 | 00.1  | Alinhamento documental                           | ✅ Concluída    |
 | 01    | Estrutura HTML e navegação                       | ✅ Concluída    |
-| 02    | Identidade visual e CSS responsivo               | 🔧 Pendente    |
+| 02    | Identidade visual e CSS responsivo               | ✅ Concluída    |
 | 03    | Modelagem de dados e localStorage                | 🔧 Pendente    |
 | 04    | CRUD de equipamentos                             | 🔧 Pendente    |
 | 05    | CRUD de locais e técnicos                        | 🔧 Pendente    |
@@ -544,5 +740,5 @@ Usar Bootstrap ou Tailwind geraria o estilo automaticamente, mas o código CSS r
 
 ---
 
-*Última atualização: Etapa 01 — Estrutura HTML e navegação.*
+*Última atualização: Etapa 02 — Identidade visual e CSS responsivo.*
 *Este documento será expandido a cada etapa de implementação.*
