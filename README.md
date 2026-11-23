@@ -41,14 +41,14 @@ TechTrack/
 │   └── style.css           # Estilos globais, layout e responsividade ✅
 │
 ├── js/
-│   ├── armazenamento.js    # Leitura e escrita no localStorage
-│   ├── dados.js            # Estrutura e inicialização dos dados
-│   ├── funcoes.js          # Funções utilitárias
-│   ├── equipamentos.js     # Lógica de equipamentos
-│   ├── manutencoes.js      # Lógica de manutenções
-│   ├── cadastros.js        # Lógica de locais e técnicos
-│   ├── dashboard.js        # Indicadores do painel
-│   └── relatorios.js       # Relatórios e backup
+│   ├── dados.js            # Estrutura global, constantes, estrutura inicial e validação ✅
+│   ├── funcoes.js          # gerarId() e obterDataHoraAtual() ✅
+│   ├── armazenamento.js    # carregarDados() e salvarDados() ✅
+│   ├── equipamentos.js     # Lógica de equipamentos (Etapa 04)
+│   ├── manutencoes.js      # Lógica de manutenções (Etapa 06)
+│   ├── cadastros.js        # Lógica de locais e técnicos (Etapa 05)
+│   ├── dashboard.js        # Indicadores do painel (Etapa 07)
+│   └── relatorios.js       # Relatórios e backup (Etapa 08)
 │
 └── assets/
     └── imagens/
@@ -87,7 +87,7 @@ TechTrack/
 | 00.1  | Alinhamento documental                           | ✅ Concluída    |
 | 01    | Estrutura HTML e navegação                       | ✅ Concluída    |
 | 02    | Identidade visual e CSS responsivo               | ✅ Concluída    |
-| 03    | Modelagem de dados e localStorage                | 🔧 Pendente    |
+| 03    | Modelagem de dados e localStorage                | ✅ Concluída   |
 | 04    | CRUD de equipamentos                             | 🔧 Pendente    |
 | 05    | CRUD de locais e técnicos                        | 🔧 Pendente    |
 | 06    | CRUD de manutenções                              | 🔧 Pendente    |
@@ -113,7 +113,7 @@ A forma recomendada é usar um servidor estático local, como a extensão **Live
 
 A abertura direta via `file://` (clicando duas vezes no arquivo) pode funcionar na maioria dos navegadores, mas o comportamento do localStorage pode variar. Recomenda-se o servidor estático local para evitar inconsistências.
 
-> **Situação atual (Etapa 02 concluída):** as páginas HTML existem com identidade visual completa. O JavaScript ainda não foi implementado — os dados e funcionalidades serão adicionados nas etapas 03 em diante.
+> **Situação atual (Etapa 03 concluída):** as páginas HTML existem com identidade visual completa. A camada de dados está implementada: `dados.js`, `funcoes.js` e `armazenamento.js` estão em funcionamento, com persistência em localStorage, geração de identificadores e validação estrutural. O CRUD de equipamentos, manutenções e demais funcionalidades serão adicionados nas etapas 04 em diante.
 
 ---
 

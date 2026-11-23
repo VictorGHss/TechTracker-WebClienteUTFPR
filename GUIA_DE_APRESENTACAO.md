@@ -536,6 +536,319 @@ Para que label e select de cada filtro se comportem como uma unidade, o HTML de 
 
 ---
 
+### 6.3 Modelagem de dados e localStorage ✅ Etapa 03
+
+#### O que são objetos JavaScript?
+
+Um objeto JavaScript é uma coleção de propriedades. Cada propriedade tem um nome e um valor. O valor pode ser um texto, um número, um booleano, outro objeto ou até uma função.
+
+No TechTrack, cada equipamento é representado como um objeto:
+
+```javascript
+// Um equipamento é um objeto com vários campos
+var equipamento = {
+    id: "m2bexkr4g05k9p",
+    patrimonio: "TT-0001",
+    categoria: "notebook",
+    fabricante: "Dell",
+    modelo: "Latitude 5420",
+    numeroSerie: "ABC123",
+    dataAquisicao: "2025-02-10",
+    dataGarantia: "2027-02-10",
+    localId: "m2bexkr4g09z1x",
+    situacaoAdministrativa: "ativo",
+    criadoEm: "2026-11-23T18:30:00.000Z",
+    atualizadoEm: "2026-11-23T18:30:00.000Z"
+};
+
+// Acessar um campo:
+console.log(equipamento.patrimonio);   // "TT-0001"
+console.log(equipamento.categoria);   // "notebook"
+```
+
+#### O que são arrays?
+
+Um array é uma lista ordenada de valores. No TechTrack, cada coleção de registros é um array de objetos.
+
+```javascript
+// Um array vazio — ainda sem equipamentos cadastrados
+var equipamentos = [];
+
+// Um array com dois equipamentos
+var equipamentos = [
+    { id: "abc", patrimonio: "TT-0001", ... },
+    { id: "def", patrimonio: "TT-0002", ... }
+];
+
+// Acessar pelo índice (começa em zero):
+console.log(equipamentos[0].patrimonio);  // "TT-0001"
+console.log(equipamentos.length);         // 2
+```
+
+#### Como as cinco entidades foram estruturadas
+
+O sistema trabalha com cinco tipos de registro, cada um com seus próprios campos:
+
+| Entidade | Campos obrigatórios principais |
+|---|---|
+| Equipamento | id, patrimonio, categoria, fabricante, modelo, dataAquisicao, localId, situacaoAdministrativa |
+| Manutenção | id, equipamentoId, tecnicoId, tipo, prioridade, descricao, estado |
+| Local | id, nome |
+| Técnico | id, nome, ativo |
+| Evento histórico | id, tipo, descricao |
+
+Todos os registros têm um campo `id` que os identifica de forma única, e todos têm `criadoEm` com o momento em que foram criados.
+
+#### Como os identificadores relacionam os registros
+
+Os registros se relacionam por referência de id — um equipamento guarda o `localId` do local onde está instalado, e uma manutenção guarda o `equipamentoId` e o `tecnicoId` associados.
+
+```javascript
+// Local cadastrado:
+var local = { id: "loc01", nome: "Sala de Servidores" };
+
+// Equipamento que aponta para esse local:
+var equipamento = { id: "eq01", patrimonio: "TT-0001", localId: "loc01", ... };
+
+// Para exibir o nome do local do equipamento, o código buscará
+// o local cujo id seja igual ao localId do equipamento.
+```
+
+Essa abordagem é chamada de relacionamento por referência e é equivalente a uma chave estrangeira em banco de dados.
+
+---
+
+#### O que é JSON?
+
+JSON significa *JavaScript Object Notation* — é um formato de texto para representar objetos e arrays JavaScript. JSON é amplamente usado para trocar dados entre sistemas e para armazená-los em arquivos de texto.
+
+**Para que serve `JSON.stringify`?**
+
+Converte um objeto JavaScript em uma string de texto no formato JSON. É usado para salvar os dados no localStorage, que só aceita texto.
+
+```javascript
+var equipamento = { id: "abc", patrimonio: "TT-0001", categoria: "notebook" };
+
+// Converte o objeto para texto JSON
+var texto = JSON.stringify(equipamento);
+
+console.log(texto);
+// '{"id":"abc","patrimonio":"TT-0001","categoria":"notebook"}'
+// ^ tudo virou uma string — pode ser armazenada no localStorage
+```
+
+**Para que serve `JSON.parse`?**
+
+Faz o caminho inverso: converte uma string de texto no formato JSON de volta para um objeto JavaScript. É usado ao recuperar os dados do localStorage.
+
+```javascript
+var texto = '{"id":"abc","patrimonio":"TT-0001","categoria":"notebook"}';
+
+// Converte o texto de volta para objeto
+var equipamento = JSON.parse(texto);
+
+console.log(equipamento.patrimonio);  // "TT-0001"
+console.log(equipamento.categoria);  // "notebook"
+```
+
+**Por que o localStorage precisa de strings?**
+
+O localStorage é um mecanismo de armazenamento de texto — ele só consegue guardar e devolver strings. Um objeto JavaScript não pode ser guardado diretamente porque não é texto. `JSON.stringify` resolve isso: transforma o objeto em uma representação textual padronizada, e `JSON.parse` desfaz essa transformação ao recuperar os dados.
+
+---
+
+#### O que é o localStorage?
+
+O `localStorage` é uma API do navegador que permite guardar pares de chave e valor como texto. Diferente das variáveis JavaScript normais, os dados no `localStorage` continuam existindo mesmo depois de fechar a aba ou o navegador — até que sejam apagados explicitamente.
+
+**Diferença entre variáveis e armazenamento persistente:**
+
+```javascript
+// Variável comum: existe apenas enquanto a página está aberta
+var nome = "Carlos";
+// Fechar o navegador → "Carlos" desaparece
+
+// localStorage: persiste entre sessões
+localStorage.setItem("nome", "Carlos");
+// Fechar o navegador → abrir de novo → "Carlos" ainda está lá
+var nome = localStorage.getItem("nome");  // "Carlos"
+```
+
+**Como funcionam `getItem` e `setItem`:**
+
+```javascript
+// Salvar um valor — setItem(chave, valor)
+localStorage.setItem("techtrack:data:v1", textoJson);
+
+// Recuperar um valor — getItem(chave)
+var texto = localStorage.getItem("techtrack:data:v1");
+// Se a chave não existir, getItem retorna null
+
+// Remover — removeItem(chave)
+localStorage.removeItem("techtrack:data:v1");
+```
+
+**Como os dados permanecem após atualizar ou fechar a página:**
+
+O `localStorage` é gerenciado pelo navegador e armazenado no disco do computador, não na memória da aba. Por isso, recarregar a página ou fechar o navegador não apaga os dados. Eles só são removidos se o código chamar `removeItem` / `clear`, se o usuário limpar os dados do navegador, ou se a origem (domínio) for diferente.
+
+---
+
+#### Para que serve cada arquivo JavaScript?
+
+O código JavaScript do TechTrack é dividido em três arquivos, cada um com uma responsabilidade clara:
+
+| Arquivo | Responsabilidade |
+|---|---|
+| `dados.js` | Define a estrutura dos dados, cria o objeto global TechTrack, valida a estrutura recuperada do storage |
+| `funcoes.js` | Funções auxiliares simples: gerar identificador único, obter data/hora atual |
+| `armazenamento.js` | Lê e grava no localStorage, converte entre objeto e JSON, trata erros de leitura e gravação |
+
+#### Como funciona o objeto compartilhado TechTrack
+
+Como os três arquivos são carregados separadamente pelo navegador, eles precisam de um ponto de encontro para compartilhar funções. Esse ponto é o objeto `window.TechTrack`.
+
+`window` é o objeto global do navegador — tudo que for colocado nele está acessível em qualquer parte do código JavaScript da página.
+
+```javascript
+// Em dados.js (carregado primeiro):
+window.TechTrack = window.TechTrack || {};
+// Se TechTrack já existir, mantém. Se não, cria um objeto vazio.
+
+TechTrack.CHAVE_ARMAZENAMENTO = "techtrack:data:v1";
+TechTrack.validarEstrutura = function (obj) { ... };
+
+// Em funcoes.js (carregado segundo):
+window.TechTrack = window.TechTrack || {};
+// TechTrack já existe — apenas adiciona as funções deste arquivo
+
+TechTrack.gerarId = function () { ... };
+
+// Em armazenamento.js (carregado terceiro):
+// TechTrack.validarEstrutura e TechTrack.gerarId já estão disponíveis
+TechTrack.carregarDados = function () {
+    // pode chamar TechTrack.validarEstrutura() porque dados.js já foi carregado
+    var resultado = TechTrack.validarEstrutura(objeto);
+};
+```
+
+A linha `window.TechTrack = window.TechTrack || {}` em cada arquivo é uma proteção: se por algum motivo a ordem de carregamento for alterada, o objeto não será recriado do zero — o que já estava nele será preservado.
+
+#### Como os scripts são carregados com `defer`
+
+O atributo `defer` no `<script>` instrui o navegador a baixar o arquivo sem pausar a renderização do HTML, executando-o somente depois que o HTML inteiro for analisado.
+
+```html
+<!-- Sem defer: o navegador para de renderizar o HTML para executar o script -->
+<script src="js/dados.js"></script>
+
+<!-- Com defer: o HTML é renderizado normalmente; o script executa por último -->
+<script src="js/dados.js" defer></script>
+```
+
+Com `defer`, todos os scripts são executados na ordem em que aparecem no HTML, após o documento estar pronto. Por isso a ordem das tags `<script>` importa:
+
+```html
+<script src="js/dados.js" defer></script>        <!-- 1º: cria TechTrack -->
+<script src="js/funcoes.js" defer></script>      <!-- 2º: adiciona gerarId, obterDataHoraAtual -->
+<script src="js/armazenamento.js" defer></script> <!-- 3º: adiciona carregarDados, salvarDados -->
+```
+
+Se `armazenamento.js` fosse carregado antes de `dados.js`, a chamada a `TechTrack.validarEstrutura()` dentro de `armazenamento.js` falharia porque a função ainda não teria sido definida.
+
+---
+
+#### Por que não usamos async/await nas operações do localStorage?
+
+O `localStorage` é **síncrono**: `getItem` e `setItem` executam imediatamente e retornam o resultado na mesma linha de código, sem esperar por nenhuma operação de rede ou disco. Não há nada a aguardar — a operação termina antes da próxima linha começar.
+
+```javascript
+// Síncrono — retorna imediatamente, sem await
+var texto = localStorage.getItem("techtrack:data:v1");
+console.log(texto); // já tem o valor aqui
+
+// async/await seria necessário aqui:
+var resposta = await fetch("https://api.exemplo.com/dados");
+// ^ precisa aguardar a resposta da rede, que pode demorar
+```
+
+`async/await` será usado futuramente quando o TechTrack implementar a leitura de arquivos para o backup — porque ler um arquivo do disco do usuário é uma operação genuinamente assíncrona.
+
+---
+
+#### Demonstração pelo console do navegador
+
+Abra qualquer página do TechTrack no navegador (via Live Server), pressione **F12** para abrir as ferramentas do desenvolvedor e clique na aba **Console**. Cole os comandos abaixo um a um para verificar o funcionamento:
+
+**1. Verificar se o TechTrack foi carregado:**
+```javascript
+// Deve exibir o objeto com todas as funções
+console.log(window.TechTrack);
+```
+
+**2. Inicializar ou recuperar os dados:**
+```javascript
+var dados = TechTrack.carregarDados();
+console.log(dados);
+// Exibe o objeto com versao, atualizadoEm e os cinco arrays
+```
+
+**3. Inspecionar a chave no localStorage:**
+```javascript
+// Exibe o texto JSON bruto armazenado
+console.log(localStorage.getItem("techtrack:data:v1"));
+```
+
+**4. Converter o JSON de volta para objeto:**
+```javascript
+var texto = localStorage.getItem("techtrack:data:v1");
+var objeto = JSON.parse(texto);
+console.log(objeto.dados.equipamentos); // []
+```
+
+**5. Salvar os dados e verificar a atualização do timestamp:**
+```javascript
+var dados = TechTrack.carregarDados();
+console.log("Antes:", dados.atualizadoEm);
+
+TechTrack.salvarDados(dados);
+console.log("Depois:", dados.atualizadoEm);
+// O segundo timestamp é mais recente que o primeiro
+```
+
+**6. Gerar identificadores e verificar unicidade:**
+```javascript
+var id1 = TechTrack.gerarId();
+var id2 = TechTrack.gerarId();
+console.log(id1, id2);
+console.log("São diferentes?", id1 !== id2); // true
+```
+
+**7. Testar a rejeição de estrutura inválida:**
+```javascript
+try {
+    TechTrack.salvarDados({ versao: 1 }); // falta dados e atualizadoEm
+} catch (erro) {
+    console.log("Erro capturado:", erro.tipo);
+    console.log("Mensagem:", erro.mensagem);
+}
+```
+
+**8. Verificar os dados na aba Application:**
+
+Na mesma janela do DevTools, clique em **Application** (ou **Armazenamento**) → **Local Storage** → origem da página. Você verá a chave `techtrack:data:v1` e seu valor JSON completo.
+
+| Conceito da aula | Onde aparece na Etapa 03 |
+|---|---|
+| Objetos JavaScript (aula 7) | Estrutura de equipamento, manutenção, local, técnico e evento |
+| Arrays (aula 7) | Cinco coleções dentro de `dados` |
+| Funções (aula 7) | `gerarId`, `obterDataHoraAtual`, `validarEstrutura`, `carregarDados`, `salvarDados` |
+| JSON (aula 9.1) | `JSON.stringify` ao salvar, `JSON.parse` ao carregar |
+| Web Storage (aula 9.2) | `localStorage.getItem` e `localStorage.setItem` |
+| `defer` (aula 7) | Ordem de carregamento dos três scripts em todas as páginas |
+
+---
+
 ## 7. Exemplos de código comentados
 
 🔧 *Esta seção será preenchida com exemplos reais do código do projeto, à medida que as funcionalidades forem implementadas. Cada exemplo incluirá comentários explicando o que o código faz e qual conceito da aula ele demonstra.*
@@ -776,7 +1089,7 @@ Usar Bootstrap ou Tailwind geraria o estilo automaticamente, mas o código CSS r
 | 00.1  | Alinhamento documental                           | ✅ Concluída    |
 | 01    | Estrutura HTML e navegação                       | ✅ Concluída    |
 | 02    | Identidade visual e CSS responsivo               | ✅ Concluída    |
-| 03    | Modelagem de dados e localStorage                | 🔧 Pendente    |
+| 03    | Modelagem de dados e localStorage                | ✅ Concluída   |
 | 04    | CRUD de equipamentos                             | 🔧 Pendente    |
 | 05    | CRUD de locais e técnicos                        | 🔧 Pendente    |
 | 06    | CRUD de manutenções                              | 🔧 Pendente    |
@@ -787,5 +1100,5 @@ Usar Bootstrap ou Tailwind geraria o estilo automaticamente, mas o código CSS r
 
 ---
 
-*Última atualização: Etapa 02.1 — Refinamento visual.*
+*Última atualização: Etapa 03 — Modelagem de dados e localStorage.*
 *Este documento será expandido a cada etapa de implementação.*

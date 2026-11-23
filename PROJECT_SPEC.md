@@ -533,7 +533,7 @@ techtrack:data:v1
 | 00.1  | Alinhamento documental                           | ✅ Concluída    |
 | 01    | Estrutura HTML e navegação                       | ✅ Concluída    |
 | 02    | Identidade visual e CSS responsivo               | ✅ Concluída    |
-| 03    | Modelagem de dados e localStorage                | 🔧 Pendente    |
+| 03    | Modelagem de dados e localStorage                | ✅ Concluída   |
 | 04    | CRUD de equipamentos                             | 🔧 Pendente    |
 | 05    | CRUD de locais e técnicos                        | 🔧 Pendente    |
 | 06    | CRUD de manutenções                              | 🔧 Pendente    |
@@ -613,3 +613,130 @@ TechTrack/
 | Mobile pequeno | ≤ 400px | Cards em 1 coluna, links da nav menores |
 
 *Última atualização: Etapa 02 — Identidade visual e CSS responsivo.*
+
+---
+
+## 21. Notas técnicas da Etapa 03
+
+### Arquivos criados
+
+```
+js/
+├── dados.js          — Estrutura global, constantes, estrutura inicial e validação
+├── funcoes.js        — gerarId() e obterDataHoraAtual()
+└── armazenamento.js  — carregarDados() e salvarDados()
+```
+
+### Chave e estrutura efetiva do armazenamento
+
+Chave: `techtrack:data:v1`
+
+```javascript
+{
+  versao: 1,
+  atualizadoEm: "2026-11-23T18:30:00.000Z",   // ISO 8601, UTC
+  dados: {
+    equipamentos: [],
+    manutencoes: [],
+    locais: [],
+    tecnicos: [],
+    eventos: []
+  }
+}
+```
+
+Todos os registros ficam dentro de `dados`. Nenhum indicador calculado é armazenado.
+
+### Responsabilidades de cada arquivo
+
+**dados.js**
+- Inicializa `window.TechTrack = window.TechTrack || {}`.
+- Define `TechTrack.CHAVE_ARMAZENAMENTO` e `TechTrack.VERSAO_DADOS`.
+- Implementa `TechTrack.criarEstruturaInicial()`.
+- Implementa `TechTrack.validarEstrutura(obj)`.
+
+**funcoes.js**
+- Implementa `TechTrack.gerarId()`.
+- Implementa `TechTrack.obterDataHoraAtual()`.
+
+**armazenamento.js**
+- Implementa `TechTrack.carregarDados()`.
+- Implementa `TechTrack.salvarDados(dados)`.
+- Implementa `TechTrack._localStorageDisponivel()` (auxiliar interno).
+
+### Métodos disponibilizados
+
+| Método | Arquivo | Descrição |
+|---|---|---|
+| `TechTrack.criarEstruturaInicial()` | dados.js | Retorna objeto com 5 coleções vazias |
+| `TechTrack.validarEstrutura(obj)` | dados.js | Retorna `{ valido, erro }` |
+| `TechTrack.gerarId()` | funcoes.js | Retorna string única combinando `Date.now` e `Math.random` |
+| `TechTrack.obterDataHoraAtual()` | funcoes.js | Retorna `new Date().toISOString()` |
+| `TechTrack.carregarDados()` | armazenamento.js | Lê, parseia, valida e retorna o objeto; inicializa se vazio |
+| `TechTrack.salvarDados(dados)` | armazenamento.js | Valida, atualiza `atualizadoEm`, serializa e grava |
+| `TechTrack._localStorageDisponivel()` | armazenamento.js | Verifica disponibilidade do storage com write/read teste |
+
+### Validações estruturais implementadas em `validarEstrutura`
+
+1. O valor é um objeto não nulo e não array.
+2. O campo `versao` existe e é igual a `TechTrack.VERSAO_DADOS` (1).
+3. O campo `atualizadoEm` existe, é string e contém data válida (`isNaN(new Date(...).getTime())`).
+4. O campo `dados` existe e é um objeto.
+5. As cinco coleções obrigatórias existem (`equipamentos`, `manutencoes`, `locais`, `tecnicos`, `eventos`).
+6. Cada coleção é um array.
+7. Cada item nas coleções é um objeto com `id` não vazio.
+
+### Tratamento de erros
+
+Todos os erros são lançados como objetos com a estrutura:
+
+```javascript
+{ tipo: "string", mensagem: "string", conteudoOriginal: "string | null" }
+```
+
+| Tipo de erro | Situação |
+|---|---|
+| `localStorage_indisponivel` | API ausente ou bloqueada (modo privado restrito) |
+| `erro_leitura` | `localStorage.getItem` lançou exceção |
+| `json_invalido` | `JSON.parse` falhou; `conteudoOriginal` preserva o texto bruto |
+| `estrutura_invalida` | `validarEstrutura` retornou `valido: false` |
+| `erro_serializacao` | `JSON.stringify` falhou |
+| `limite_armazenamento` | `QuotaExceededError` ou código 22 |
+| `erro_gravacao` | `localStorage.setItem` lançou outra exceção |
+
+**Regra fundamental:** nenhum erro apaga automaticamente os dados existentes. Em caso de JSON corrompido ou estrutura incompatível, o conteúdo original é preservado e retornado no campo `conteudoOriginal` do erro.
+
+### Ordem de carregamento dos scripts
+
+Todas as seis páginas HTML carregam os scripts nesta ordem, com `defer`:
+
+```html
+<script src="js/dados.js" defer></script>
+<script src="js/funcoes.js" defer></script>
+<script src="js/armazenamento.js" defer></script>
+```
+
+Os scripts de funcionalidades específicas (dashboard.js, equipamentos.js, etc.) foram removidos temporariamente e serão reintroduzidos nas etapas correspondentes.
+
+### Decisões técnicas
+
+- **Objeto global `window.TechTrack`:** evita poluição do escopo global com múltiplas variáveis soltas e deixa explícito que o objeto é compartilhado entre páginas. A linha `window.TechTrack = window.TechTrack || {}` em cada arquivo garante que a ordem de carregamento possa variar sem apagar o que já foi definido.
+- **Sem classes:** o projeto usa funções e objetos literais, compatíveis com o nível da disciplina e mais fáceis de explicar.
+- **Sem async/await:** o `localStorage` é síncrono; `async/await` será introduzido na etapa de backup, quando a leitura de arquivo for genuinamente assíncrona.
+- **Erros como objetos descritivos:** em vez de lançar `new Error(mensagem)`, os erros são objetos com `tipo`, `mensagem` e `conteudoOriginal`. Isso facilita o tratamento programático (verificar `erro.tipo`) e a exibição de mensagens úteis ao usuário.
+- **Nomes em português:** todas as funções e variáveis seguem a convenção do projeto, em português brasileiro, para facilitar a leitura e a apresentação.
+
+### Testes executados (Node.js)
+
+41 testes automatizados passaram com sucesso:
+
+- **Teste 1 — Primeira inicialização:** estrutura criada corretamente com 5 arrays vazios.
+- **Teste 2 — Persistência:** salvar e reler mantém a estrutura íntegra.
+- **Teste 3 — Conversão JSON:** `JSON.stringify` e `JSON.parse` preservam todos os campos.
+- **Teste 4 — Estrutura inválida:** `salvarDados` rejeita objeto sem coleção obrigatória; storage não é alterado.
+- **Teste 5 — JSON corrompido:** `carregarDados` lança erro com `tipo: "json_invalido"` e preserva o conteúdo original.
+- **Teste 6 — Identificadores únicos:** 100 IDs gerados em sequência são todos distintos.
+- **Teste bônus — validarEstrutura:** 6 casos de borda verificados (null, versão errada, data inválida, id vazio, etc.).
+- **Teste bônus — obterDataHoraAtual:** formato ISO 8601 com T e Z, parseável por `new Date()`.
+
+*Última atualização: Etapa 03 — Modelagem de dados e localStorage.*
