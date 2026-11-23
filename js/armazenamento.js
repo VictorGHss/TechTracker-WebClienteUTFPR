@@ -47,10 +47,12 @@ window.TechTrack = window.TechTrack || {};
  *      (SecurityError em iframes restritos, TypeError em ambientes sem
  *      Web Storage) sem realizar nenhuma escrita.
  *   2. Busca o conteúdo da chave "techtrack:data:v1" via getItem.
- *   3. Se não existir conteúdo, cria a estrutura inicial e tenta salvá-la.
- *      Se a gravação inicial falhar (storage cheio), retorna a estrutura
- *      em memória e propaga o aviso.
+ *   3. Se getItem retornar null (chave inexistente), cria a estrutura
+ *      inicial e a salva. Se salvarDados() falhar, o erro é propagado
+ *      ao chamador — nenhum dado é retornado silenciosamente.
  *   4. Converte o texto JSON em objeto com JSON.parse.
+ *      String vazia ou qualquer conteúdo não parseável resulta em
+ *      erro json_invalido, preservando o conteúdo original intacto.
  *   5. Valida a estrutura recuperada.
  *   6. Retorna o objeto pronto para uso.
  *
@@ -95,17 +97,19 @@ TechTrack.carregarDados = function () {
         };
     }
 
-    // 3. Se não existir nenhum conteúdo, inicializar com estrutura vazia.
-    //    A tentativa de gravação pode falhar se o storage estiver cheio;
-    //    nesse caso, a estrutura inicial é retornada mesmo assim (em memória),
-    //    e o erro de gravação é propagado para o chamador.
-    if (conteudoTexto === null || conteudoTexto === undefined || conteudoTexto === "") {
+    // 3. Se getItem retornou null, a chave não existe no localStorage.
+    //    Nesse caso é seguro criar e salvar a estrutura inicial.
+    //    Se salvarDados() falhar (storage cheio), o erro é propagado —
+    //    não há retorno silencioso de dados em memória.
+    if (conteudoTexto === null) {
         var estruturaInicial = TechTrack.criarEstruturaInicial();
-        TechTrack.salvarDados(estruturaInicial); // pode lançar erro de escrita
+        TechTrack.salvarDados(estruturaInicial); // lança erro se a gravação falhar
         return estruturaInicial;
     }
 
     // 4. Converter o texto JSON em objeto JavaScript.
+    //    Qualquer conteúdo não parseável — incluindo string vazia — resulta
+    //    em erro json_invalido. O conteúdo original é preservado intacto.
     var objeto = null;
     try {
         objeto = JSON.parse(conteudoTexto);

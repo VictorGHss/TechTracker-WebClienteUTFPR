@@ -510,32 +510,6 @@ Para que label e select de cada filtro se comportem como uma unidade, o HTML de 
 | Variáveis CSS | Paleta centralizada em `:root` |
 | Media Queries e Viewport | Breakpoints de 1023px, 767px e 400px |
 
-### 6.3 Equipamentos
-
-*A ser preenchido na etapa 04 — CRUD de equipamentos.*
-
-### 6.4 Manutenções
-
-*A ser preenchido na etapa 06 — CRUD de manutenções.*
-
-### 6.5 Locais e Técnicos
-
-*A ser preenchido na etapa 05 — CRUD de locais e técnicos.*
-
-### 6.6 Histórico
-
-*A ser preenchido na etapa 07 — Dashboard e histórico.*
-
-### 6.7 Relatórios e Backup
-
-*A ser preenchido na etapa 08 — Relatórios e backup.*
-
-### 6.8 QR Code
-
-*A ser preenchido na etapa 09 — QR Code e etiquetas.*
-
----
-
 ### 6.3 Modelagem de dados e localStorage ✅ Etapa 03
 
 #### O que são objetos JavaScript?
@@ -914,6 +888,30 @@ A mensagem de texto de um erro (`erroGravacao.message`) varia entre navegadores 
 | `defer` (aula 7) | Ordem de carregamento dos três scripts em todas as páginas |
 
 ---
+
+### 6.4 Equipamentos
+
+*A ser preenchido na etapa 04 — CRUD de equipamentos.*
+
+### 6.5 Manutenções
+
+*A ser preenchido na etapa 06 — CRUD de manutenções.*
+
+### 6.6 Locais e Técnicos
+
+*A ser preenchido na etapa 05 — CRUD de locais e técnicos.*
+
+### 6.7 Histórico
+
+*A ser preenchido na etapa 07 — Dashboard e histórico.*
+
+### 6.8 Relatórios e Backup
+
+*A ser preenchido na etapa 08 — Relatórios e backup.*
+
+### 6.9 QR Code
+
+*A ser preenchido na etapa 09 — QR Code e etiquetas.*
 
 ## 7. Exemplos de código comentados
 

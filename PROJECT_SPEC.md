@@ -662,7 +662,6 @@ Todos os registros ficam dentro de `dados`. Nenhum indicador calculado é armaze
 **armazenamento.js**
 - Implementa `TechTrack.carregarDados()`.
 - Implementa `TechTrack.salvarDados(dados)`.
-- Implementa `TechTrack._localStorageDisponivel()` (auxiliar interno).
 
 ### Métodos disponibilizados
 
@@ -672,7 +671,7 @@ Todos os registros ficam dentro de `dados`. Nenhum indicador calculado é armaze
 | `TechTrack.validarEstrutura(obj)` | dados.js | Retorna `{ valido, erro }` |
 | `TechTrack.gerarId()` | funcoes.js | Retorna string única combinando `Date.now` e `Math.random` |
 | `TechTrack.obterDataHoraAtual()` | funcoes.js | Retorna `new Date().toISOString()` |
-| `TechTrack.carregarDados()` | armazenamento.js | Acessa `window.localStorage` diretamente, lê via `getItem`, parseia, valida e retorna |
+| `TechTrack.carregarDados()` | armazenamento.js | Acessa `window.localStorage`, lê via `getItem`: `null` inicializa estrutura, qualquer outro conteúdo vai para `JSON.parse` |
 | `TechTrack.salvarDados(dados)` | armazenamento.js | Valida, atualiza `atualizadoEm`, serializa e grava via `setItem` |
 
 ### Validações estruturais implementadas em `validarEstrutura`
