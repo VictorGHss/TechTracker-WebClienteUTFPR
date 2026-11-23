@@ -991,8 +991,135 @@ tbody tr:hover {
 }
 
 
-/* --------------------------------------------------------------------------
-   Celulares muito pequenos — até 400px
+/* ==========================================================================
+   13. FORMULÁRIOS EMBUTIDOS
+   Campos, labels, grupos e mensagens de feedback dos formulários de CRUD.
+   ========================================================================== */
+
+/* Agrupa label + input/textarea + mensagem de erro verticalmente */
+.grupo-campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+  margin-bottom: var(--espaco-md);
+}
+
+.grupo-campo label {
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: var(--cor-texto);
+}
+
+.grupo-campo input[type="text"],
+.grupo-campo input[type="email"],
+.grupo-campo input[type="date"],
+.grupo-campo input[type="number"],
+.grupo-campo select,
+.grupo-campo textarea {
+  padding: var(--espaco-sm) var(--espaco-md);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--cor-texto);
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-borda);
+  width: 100%;
+  max-width: 480px;
+  transition: border-color 0.15s ease;
+}
+
+.grupo-campo input:focus,
+.grupo-campo select:focus,
+.grupo-campo textarea:focus {
+  border-color: var(--cor-azul);
+  outline: none;
+}
+
+.grupo-campo textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+/* Mensagem de erro inline por campo */
+.campo-erro {
+  font-size: 0.8rem;
+  color: var(--cor-erro);
+  min-height: 1rem;
+}
+
+/* Linha de botões do formulário */
+.form-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-sm);
+  margin-top: var(--espaco-sm);
+}
+
+/* Mensagem de feedback geral da seção (sucesso, erro, aviso) */
+.mensagem-feedback {
+  padding: var(--espaco-sm) var(--espaco-md);
+  border-radius: var(--raio-borda);
+  font-size: 0.875rem;
+  font-weight: bold;
+  margin-bottom: var(--espaco-md);
+}
+
+.mensagem-feedback.sucesso {
+  background-color: var(--cor-sucesso-bg);
+  color: var(--cor-sucesso);
+  border: 1px solid var(--cor-sucesso);
+}
+
+.mensagem-feedback.erro {
+  background-color: var(--cor-erro-bg);
+  color: var(--cor-erro);
+  border: 1px solid var(--cor-erro);
+}
+
+.mensagem-feedback.aviso {
+  background-color: var(--cor-atencao-bg);
+  color: var(--cor-atencao);
+  border: 1px solid var(--cor-atencao);
+}
+
+/* Coluna de ações nas tabelas */
+.acoes-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-xs);
+}
+
+.acoes-linha button {
+  padding: var(--espaco-xs) var(--espaco-sm);
+  font-size: 0.8rem;
+}
+
+
+/* ==========================================================================
+   14. RESPONSIVIDADE DOS FORMULÁRIOS
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .grupo-campo input[type="text"],
+  .grupo-campo input[type="email"],
+  .grupo-campo input[type="date"],
+  .grupo-campo input[type="number"],
+  .grupo-campo select,
+  .grupo-campo textarea {
+    max-width: 100%;
+  }
+
+  .form-acoes {
+    flex-direction: column;
+  }
+
+  .form-acoes button {
+    width: 100%;
+  }
+}
+
+
+
    Ajustes finos para telas abaixo de 400px.
    -------------------------------------------------------------------------- */
 

@@ -534,8 +534,10 @@ techtrack:data:v1
 | 01    | Estrutura HTML e navegação                       | ✅ Concluída    |
 | 02    | Identidade visual e CSS responsivo               | ✅ Concluída    |
 | 03    | Modelagem de dados e localStorage                | ✅ Concluída   |
-| 04    | CRUD de equipamentos                             | 🔧 Pendente    |
-| 05    | CRUD de locais e técnicos                        | 🔧 Pendente    |
+| 03.1  | Refinamento do armazenamento local               | ✅ Concluída   |
+| 03.2  | Preservação de conteúdo inválido                 | ✅ Concluída   |
+| 04    | CRUD de locais e técnicos                        | ✅ Concluída   |
+| 05    | CRUD de equipamentos                             | 🔧 Pendente    |
 | 06    | CRUD de manutenções                              | 🔧 Pendente    |
 | 07    | Dashboard e histórico                            | 🔧 Pendente    |
 | 08    | Relatórios e backup                              | 🔧 Pendente    |
@@ -751,4 +753,105 @@ Os scripts de funcionalidades específicas (dashboard.js, equipamentos.js, etc.)
 - **Teste E:** JSON corrompido — conteúdo original preservado, storage não sobrescrito.
 - **Teste extra:** `QuotaExceededError` identificado por `code === 22` (compatibilidade com navegadores antigos).
 
-*Última atualização: Etapa 03.1 — Refinamento do armazenamento local.*
+**Etapa 03.2 (21 testes):**
+- `null` → inicializa estrutura; string vazia → `json_invalido` sem sobrescrever storage.
+- JSON corrompido e fluxo normal verificados.
+
+---
+
+## 22. Notas técnicas da Etapa 04
+
+### Arquivo criado
+
+`js/cadastros.js` — CRUD de locais e técnicos.
+
+### Responsabilidades de cadastros.js
+
+- Inicializa a página via `DOMContentLoaded`.
+- Registra eventos de `submit` e `click` nos formulários e botões.
+- Renderiza as tabelas de locais e técnicos a partir dos dados do localStorage.
+- Implementa as funções de cadastro, edição e exclusão de locais.
+- Implementa as funções de cadastro, edição, ativação/inativação e exclusão de técnicos.
+- Exibe mensagens de feedback e erros inline por campo.
+- Aplica as regras de negócio RN-06 e RN-07 antes de qualquer operação destrutiva.
+- Usa exclusivamente `TechTrack.carregarDados()` e `TechTrack.salvarDados()` — sem acesso direto ao localStorage.
+
+### Funções implementadas
+
+**Locais:**
+
+| Função | Descrição |
+|---|---|
+| `renderizarLocais()` | Atualiza a tabela de locais; alterna estado vazio/tabela |
+| `criarLinhaLocal(local, qtd)` | Cria e retorna um `<tr>` com ações de editar e excluir |
+| `abrirFormularioNovoLocal()` | Limpa campos e exibe o formulário para novo cadastro |
+| `fecharFormularioLocal()` | Oculta o formulário sem salvar |
+| `salvarLocal(evento)` | Cadastra ou edita um local via submit do formulário |
+| `editarLocal(id)` | Preenche o formulário com os dados do local selecionado |
+| `excluirLocal(id)` | Verifica vínculos, pede confirmação e remove o local |
+
+**Técnicos:**
+
+| Função | Descrição |
+|---|---|
+| `renderizarTecnicos()` | Atualiza a tabela de técnicos |
+| `criarLinhaTecnico(tecnico, qtd)` | Cria `<tr>` com botões de editar, ativar/inativar e excluir |
+| `abrirFormularioNovoTecnico()` | Limpa campos e exibe o formulário |
+| `fecharFormularioTecnico()` | Oculta o formulário sem salvar |
+| `salvarTecnico(evento)` | Cadastra ou edita um técnico |
+| `editarTecnico(id)` | Preenche o formulário com os dados do técnico selecionado |
+| `alterarSituacaoTecnico(id)` | Ativa ou inativa, verificando manutenções ativas antes de inativar |
+| `excluirTecnico(id)` | Verifica vínculos, pede confirmação e remove o técnico |
+
+**Auxiliares:**
+
+| Função | Descrição |
+|---|---|
+| `exibirFeedback(id, texto, tipo)` | Exibe mensagem de sucesso/erro/aviso com remoção automática (5 s) |
+| `exibirErroCampo(id, texto)` | Exibe erro inline em um campo específico |
+| `limparErroCampo(id)` | Limpa o erro de um campo |
+
+### Regras de negócio aplicadas
+
+**RN-06 — Técnico inativo não recebe manutenções:**
+`alterarSituacaoTecnico()` impede a inativação quando existe manutenção com estado `"aberta"` ou `"em_andamento"` associada ao técnico.
+
+**RN-07 — Restrição de exclusão por relacionamento:**
+- `excluirLocal()` impede a exclusão quando algum equipamento possui `localId` igual ao ID do local.
+- `excluirTecnico()` impede a exclusão quando existe qualquer manutenção com `tecnicoId` igual ao ID do técnico.
+
+### Comportamento da interface
+
+- Formulários iniciam ocultos (`hidden`) e aparecem ao clicar em "Novo".
+- Campos inválidos exibem erro inline sem fechar o formulário.
+- Após salvar com sucesso, o formulário fecha e a tabela é atualizada.
+- Após cancelar, os dados permanecem inalterados.
+- Mensagens de feedback somem automaticamente após 5 segundos.
+- Nomes, descrições e contatos são exibidos via `textContent` (proteção contra XSS).
+- Erros de `carregarDados()` ou `salvarDados()` são exibidos como feedback de erro, sem apagar dados.
+
+### Ordem de carregamento atualizada em cadastros.html
+
+```html
+<script src="js/dados.js" defer></script>
+<script src="js/funcoes.js" defer></script>
+<script src="js/armazenamento.js" defer></script>
+<script src="js/cadastros.js" defer></script>
+```
+
+### Estilos adicionados ao CSS (Etapa 04)
+
+Duas novas seções foram adicionadas ao `css/style.css`:
+
+- **Seção 13 — Formulários embutidos:** `.grupo-campo`, `.campo-erro`, `.form-acoes`, `.mensagem-feedback` (com variantes `.sucesso`, `.erro`, `.aviso`), `.acoes-linha`.
+- **Seção 14 — Responsividade dos formulários:** campos e botões em coluna única em telas até 767px.
+
+### Testes executados (Node.js) — Etapa 04
+
+60 testes automatizados passaram com sucesso:
+
+- **Testes 1–7 (locais):** cadastro válido, rejeição de nome vazio, edição com preservação de id e criadoEm, cancelamento sem alterar dados, exclusão com e sem vínculo de equipamento, persistência após reler.
+- **Testes 8–16 (técnicos):** cadastro com `ativo = true`, rejeição de nome vazio, edição preservando situação, inativação com manutenção concluída (permitida), bloqueio com manutenção aberta, bloqueio com em_andamento, reativação, bloqueio de exclusão com vínculo, exclusão sem vínculo.
+- **Testes 17–20 (integração):** outras coleções intactas, persistência após reler, falha de salvamento não exibe sucesso, texto especial armazenado como string simples.
+
+*Última atualização: Etapa 04 — CRUD de locais e técnicos.*

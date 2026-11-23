@@ -65,10 +65,18 @@
           Cada equipamento deve estar associado a um local cadastrado.
         </p>
 
+        <!-- Mensagem de feedback das operações de locais -->
+        <p
+          id="feedback-locais"
+          class="mensagem-feedback"
+          role="status"
+          aria-live="polite"
+          hidden
+        ></p>
+
         <!-- Ações da seção de locais -->
         <div class="secao-acoes">
-          <!-- Botão sem comportamento nesta etapa — JavaScript será adicionado na Etapa 05 -->
-          <button type="button" id="btn-novo-local" disabled>
+          <button type="button" id="btn-novo-local">
             Novo local
           </button>
         </div>
@@ -78,7 +86,7 @@
           Nenhum local cadastrado. Os locais aparecerão nesta tabela após o cadastro.
         </p>
 
-        <!-- Tabela de locais — será preenchida e exibida pelo cadastros.js -->
+        <!-- Tabela de locais -->
         <div class="tabela-wrapper" id="wrapper-tabela-locais" hidden>
           <table id="tabela-locais">
             <thead>
@@ -95,10 +103,44 @@
           </table>
         </div>
 
-        <!-- Painel de formulário de local — controlado pelo cadastros.js na Etapa 05 -->
+        <!-- Painel de formulário de local -->
         <section id="painel-formulario-local" aria-labelledby="titulo-form-local" hidden>
           <h4 id="titulo-form-local">Cadastrar local</h4>
-          <p>O formulário de locais será implementado na Etapa 05.</p>
+
+          <form id="form-local" novalidate>
+            <!-- Campo oculto para armazenar o ID durante edição -->
+            <input type="hidden" id="local-id" value="">
+
+            <div class="grupo-campo">
+              <label for="local-nome">Nome <span aria-hidden="true">*</span></label>
+              <input
+                type="text"
+                id="local-nome"
+                name="local-nome"
+                autocomplete="off"
+                maxlength="100"
+                required
+                aria-required="true"
+                aria-describedby="local-nome-erro"
+              >
+              <span class="campo-erro" id="local-nome-erro" aria-live="polite"></span>
+            </div>
+
+            <div class="grupo-campo">
+              <label for="local-descricao">Descrição</label>
+              <textarea
+                id="local-descricao"
+                name="local-descricao"
+                rows="3"
+                maxlength="300"
+              ></textarea>
+            </div>
+
+            <div class="form-acoes">
+              <button type="submit" id="btn-salvar-local">Salvar</button>
+              <button type="button" id="btn-cancelar-local" class="btn-secundario">Cancelar</button>
+            </div>
+          </form>
         </section>
       </section>
 
@@ -112,10 +154,18 @@
           Somente técnicos ativos podem receber novas manutenções.
         </p>
 
+        <!-- Mensagem de feedback das operações de técnicos -->
+        <p
+          id="feedback-tecnicos"
+          class="mensagem-feedback"
+          role="status"
+          aria-live="polite"
+          hidden
+        ></p>
+
         <!-- Ações da seção de técnicos -->
         <div class="secao-acoes">
-          <!-- Botão sem comportamento nesta etapa — JavaScript será adicionado na Etapa 05 -->
-          <button type="button" id="btn-novo-tecnico" disabled>
+          <button type="button" id="btn-novo-tecnico">
             Novo técnico
           </button>
         </div>
@@ -125,7 +175,7 @@
           Nenhum técnico cadastrado. Os técnicos aparecerão nesta tabela após o cadastro.
         </p>
 
-        <!-- Tabela de técnicos — será preenchida e exibida pelo cadastros.js -->
+        <!-- Tabela de técnicos -->
         <div class="tabela-wrapper" id="wrapper-tabela-tecnicos" hidden>
           <table id="tabela-tecnicos">
             <thead>
@@ -143,10 +193,46 @@
           </table>
         </div>
 
-        <!-- Painel de formulário de técnico — controlado pelo cadastros.js na Etapa 05 -->
+        <!-- Painel de formulário de técnico -->
         <section id="painel-formulario-tecnico" aria-labelledby="titulo-form-tecnico" hidden>
           <h4 id="titulo-form-tecnico">Cadastrar técnico</h4>
-          <p>O formulário de técnicos será implementado na Etapa 05.</p>
+
+          <form id="form-tecnico" novalidate>
+            <!-- Campo oculto para armazenar o ID durante edição -->
+            <input type="hidden" id="tecnico-id" value="">
+
+            <div class="grupo-campo">
+              <label for="tecnico-nome">Nome <span aria-hidden="true">*</span></label>
+              <input
+                type="text"
+                id="tecnico-nome"
+                name="tecnico-nome"
+                autocomplete="off"
+                maxlength="100"
+                required
+                aria-required="true"
+                aria-describedby="tecnico-nome-erro"
+              >
+              <span class="campo-erro" id="tecnico-nome-erro" aria-live="polite"></span>
+            </div>
+
+            <div class="grupo-campo">
+              <label for="tecnico-contato">Contato</label>
+              <input
+                type="text"
+                id="tecnico-contato"
+                name="tecnico-contato"
+                autocomplete="off"
+                maxlength="100"
+                placeholder="E-mail ou telefone"
+              >
+            </div>
+
+            <div class="form-acoes">
+              <button type="submit" id="btn-salvar-tecnico">Salvar</button>
+              <button type="button" id="btn-cancelar-tecnico" class="btn-secundario">Cancelar</button>
+            </div>
+          </form>
         </section>
       </section>
 
@@ -161,6 +247,6 @@
   <script src="js/dados.js" defer></script>
   <script src="js/funcoes.js" defer></script>
   <script src="js/armazenamento.js" defer></script>
-  <!-- cadastros.js será adicionado na Etapa 05 -->
+  <script src="js/cadastros.js" defer></script>
 </body>
 </html>

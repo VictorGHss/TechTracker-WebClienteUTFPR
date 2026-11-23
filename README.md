@@ -44,9 +44,9 @@ TechTrack/
 │   ├── dados.js            # Estrutura global, constantes, estrutura inicial e validação ✅
 │   ├── funcoes.js          # gerarId() e obterDataHoraAtual() ✅
 │   ├── armazenamento.js    # carregarDados() e salvarDados() ✅
-│   ├── equipamentos.js     # Lógica de equipamentos (Etapa 04)
+│   ├── cadastros.js        # CRUD de locais e técnicos ✅
+│   ├── equipamentos.js     # Lógica de equipamentos (Etapa 05)
 │   ├── manutencoes.js      # Lógica de manutenções (Etapa 06)
-│   ├── cadastros.js        # Lógica de locais e técnicos (Etapa 05)
 │   ├── dashboard.js        # Indicadores do painel (Etapa 07)
 │   └── relatorios.js       # Relatórios e backup (Etapa 08)
 │
@@ -88,8 +88,10 @@ TechTrack/
 | 01    | Estrutura HTML e navegação                       | ✅ Concluída    |
 | 02    | Identidade visual e CSS responsivo               | ✅ Concluída    |
 | 03    | Modelagem de dados e localStorage                | ✅ Concluída   |
-| 04    | CRUD de equipamentos                             | 🔧 Pendente    |
-| 05    | CRUD de locais e técnicos                        | 🔧 Pendente    |
+| 03.1  | Refinamento do armazenamento local               | ✅ Concluída   |
+| 03.2  | Preservação de conteúdo inválido                 | ✅ Concluída   |
+| 04    | CRUD de locais e técnicos                        | ✅ Concluída   |
+| 05    | CRUD de equipamentos                             | 🔧 Pendente    |
 | 06    | CRUD de manutenções                              | 🔧 Pendente    |
 | 07    | Dashboard e histórico                            | 🔧 Pendente    |
 | 08    | Relatórios e backup                              | 🔧 Pendente    |
@@ -113,7 +115,7 @@ A forma recomendada é usar um servidor estático local, como a extensão **Live
 
 A abertura direta via `file://` (clicando duas vezes no arquivo) pode funcionar na maioria dos navegadores, mas o comportamento do localStorage pode variar. Recomenda-se o servidor estático local para evitar inconsistências.
 
-> **Situação atual (Etapa 03 concluída):** as páginas HTML existem com identidade visual completa. A camada de dados está implementada: `dados.js`, `funcoes.js` e `armazenamento.js` estão em funcionamento, com persistência em localStorage, geração de identificadores e validação estrutural. O CRUD de equipamentos, manutenções e demais funcionalidades serão adicionados nas etapas 04 em diante.
+> **Situação atual (Etapa 04 concluída):** a camada de dados está implementada e os cadastros auxiliares estão funcionando. `cadastros.js` oferece CRUD completo de locais e técnicos, com validações, regras de vínculo e persistência via localStorage. O CRUD de equipamentos será implementado na Etapa 05.
 
 ---
 

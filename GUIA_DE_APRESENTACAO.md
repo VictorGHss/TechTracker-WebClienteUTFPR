@@ -889,17 +889,295 @@ A mensagem de texto de um erro (`erroGravacao.message`) varia entre navegadores 
 
 ---
 
-### 6.4 Equipamentos
+### 6.4 Locais e Técnicos ✅ Etapa 04
 
-*A ser preenchido na etapa 04 — CRUD de equipamentos.*
+#### O que é CRUD?
 
-### 6.5 Manutenções
+CRUD é a sigla em inglês para as quatro operações fundamentais sobre dados:
+
+| Letra | Operação | O que faz |
+|---|---|---|
+| C | Create (Criar) | Cadastrar um novo registro |
+| R | Read (Ler) | Exibir os registros existentes |
+| U | Update (Atualizar) | Editar os dados de um registro |
+| D | Delete (Excluir) | Remover um registro |
+
+No TechTrack, a Etapa 04 implementa o CRUD completo de locais e técnicos. Toda operação lê os dados do localStorage, modifica o array correspondente e salva de volta.
+
+---
+
+#### Como os formulários HTML funcionam
+
+O HTML permite criar formulários com o elemento `<form>`. Cada campo recebe um `<input>` ou `<textarea>` com um `id` único, e um `<label>` associado com o atributo `for`.
+
+```html
+<!-- Formulário de local em cadastros.html -->
+<form id="form-local" novalidate>
+
+  <!-- Campo oculto: guarda o ID durante edição (vazio no cadastro) -->
+  <input type="hidden" id="local-id" value="">
+
+  <div class="grupo-campo">
+    <label for="local-nome">Nome</label>
+    <input type="text" id="local-nome" required aria-required="true">
+    <span class="campo-erro" id="local-nome-erro" aria-live="polite"></span>
+  </div>
+
+  <div class="grupo-campo">
+    <label for="local-descricao">Descrição</label>
+    <textarea id="local-descricao" rows="3"></textarea>
+  </div>
+
+  <div class="form-acoes">
+    <button type="submit" id="btn-salvar-local">Salvar</button>
+    <button type="button" id="btn-cancelar-local" class="btn-secundario">Cancelar</button>
+  </div>
+</form>
+```
+
+**Por que `novalidate`?** Por padrão, o navegador tenta validar os campos antes de enviar o formulário. Com `novalidate`, desativamos essa validação nativa e fazemos a validação manualmente no JavaScript — assim controlamos exatamente qual mensagem exibir e onde.
+
+**Por que `type="hidden"` no campo id?** Durante a edição, precisamos saber qual registro está sendo modificado. O campo oculto guarda esse ID no próprio formulário. Se o campo estiver vazio, é um novo cadastro; se tiver valor, é uma edição.
+
+---
+
+#### Como o evento submit é tratado com preventDefault()
+
+Quando o usuário clica em "Salvar" dentro de um `<form>`, o navegador normalmente envia os dados para um servidor e recarrega a página. No TechTrack, não há servidor — tudo acontece no JavaScript. Por isso usamos `addEventListener("submit", ...)` com `preventDefault()`.
+
+```javascript
+// Em cadastros.js, registrado no DOMContentLoaded:
+document.getElementById("form-local").addEventListener("submit", salvarLocal);
+
+// A função salvarLocal recebe o evento como parâmetro:
+function salvarLocal(evento) {
+    // Impede o envio tradicional (que recarregaria a página)
+    evento.preventDefault();
+
+    // A partir daqui, o JavaScript controla tudo
+    var nome = document.getElementById("local-nome").value.trim();
+    // ...
+}
+```
+
+**Por que `trim()`?** Remove espaços em branco do início e do fim do texto digitado. Isso evita cadastrar " Sala 101 " como um nome diferente de "Sala 101".
+
+---
+
+#### Como o JavaScript cria linhas da tabela
+
+Quando há dados para exibir, `renderizarLocais()` cria elementos HTML via JavaScript e os insere na tabela:
+
+```javascript
+function renderizarLocais() {
+    var dados = TechTrack.carregarDados();
+    var locais = dados.dados.locais;
+    var corpo = document.getElementById("corpo-tabela-locais");
+
+    // Apaga as linhas anteriores antes de redesenhar
+    corpo.innerHTML = "";
+
+    for (var i = 0; i < locais.length; i++) {
+        var local = locais[i];
+        var linha = criarLinhaLocal(local, qtdEquipamentos);
+        corpo.appendChild(linha);  // adiciona a linha à tabela
+    }
+}
+
+function criarLinhaLocal(local, qtdEquipamentos) {
+    var tr = document.createElement("tr");   // cria a linha
+
+    var tdNome = document.createElement("td");
+    tdNome.textContent = local.nome;  // textContent, não innerHTML
+    tr.appendChild(tdNome);
+
+    // ... outras colunas ...
+    return tr;
+}
+```
+
+**Por que `textContent` e não `innerHTML`?** Se usássemos `innerHTML = local.nome`, o navegador interpretaria qualquer HTML dentro do texto como código. Se alguém cadastrasse um local com o nome `<script>alert('xss')</script>`, esse código seria executado. Com `textContent`, o navegador trata o valor como texto puro — nunca como HTML. Isso é uma proteção básica contra XSS (*Cross-Site Scripting*).
+
+---
+
+#### Como os dados são adicionados, editados e removidos dos arrays
+
+**Adicionar** um novo local:
+
+```javascript
+// 1. Criar o objeto com os dados do formulário
+var novoLocal = {
+    id: TechTrack.gerarId(),
+    nome: nome,
+    descricao: descricao,
+    criadoEm: TechTrack.obterDataHoraAtual()
+};
+
+// 2. Adicionar ao array
+dados.dados.locais.push(novoLocal);
+
+// 3. Salvar o objeto completo
+TechTrack.salvarDados(dados);
+```
+
+**Editar** um local existente — encontrar pelo id e atualizar os campos:
+
+```javascript
+for (var i = 0; i < dados.dados.locais.length; i++) {
+    if (dados.dados.locais[i].id === idExistente) {
+        // Atualiza apenas os campos editáveis
+        dados.dados.locais[i].nome = nome;
+        dados.dados.locais[i].descricao = descricao;
+        // id e criadoEm são preservados automaticamente
+        break;
+    }
+}
+TechTrack.salvarDados(dados);
+```
+
+**Remover** um local — `filter` cria um novo array sem o item:
+
+```javascript
+// filter percorre o array e mantém apenas os itens que passam no teste
+dados.dados.locais = dados.dados.locais.filter(function (local) {
+    return local.id !== id;  // mantém todos exceto o que tem este id
+});
+TechTrack.salvarDados(dados);
+```
+
+---
+
+#### Como o localStorage mantém os registros
+
+Toda operação segue o mesmo ciclo:
+
+```
+carregarDados()       →   modificar o array   →   salvarDados()
+(lê o JSON do storage)    (no JavaScript)          (grava o JSON no storage)
+```
+
+```javascript
+// Exemplo completo do fluxo de cadastro:
+function salvarLocal(evento) {
+    evento.preventDefault();
+
+    var nome = document.getElementById("local-nome").value.trim();
+    if (nome === "") { return; }  // validação
+
+    // 1. Carregar todos os dados atuais
+    var dados = TechTrack.carregarDados();
+
+    // 2. Criar e adicionar o novo local
+    dados.dados.locais.push({
+        id: TechTrack.gerarId(),
+        nome: nome,
+        descricao: document.getElementById("local-descricao").value.trim(),
+        criadoEm: TechTrack.obterDataHoraAtual()
+    });
+
+    // 3. Salvar o objeto completo de volta no localStorage
+    TechTrack.salvarDados(dados);
+
+    // 4. Atualizar a tabela na tela
+    renderizarLocais();
+}
+```
+
+**Por que carregar e salvar o objeto completo?** O localStorage guarda um único JSON. Precisamos ler tudo, modificar a parte que interessa e gravar tudo de volta. Isso garante que equipamentos, manutenções e outros dados não sejam perdidos quando um local é cadastrado.
+
+---
+
+#### Como os relacionamentos impedem exclusões indevidas
+
+Antes de excluir um local, o código verifica se algum equipamento aponta para ele (campo `localId`). Se houver, a exclusão é bloqueada:
+
+```javascript
+function excluirLocal(id) {
+    var dados = TechTrack.carregarDados();
+
+    // Percorre todos os equipamentos e conta os que usam este local
+    var equipamentosVinculados = 0;
+    for (var i = 0; i < dados.dados.equipamentos.length; i++) {
+        if (dados.dados.equipamentos[i].localId === id) {
+            equipamentosVinculados++;
+        }
+    }
+
+    if (equipamentosVinculados > 0) {
+        // Exibe aviso e interrompe — não exclui nada
+        exibirFeedback("feedback-locais",
+            "Não é possível excluir: " + equipamentosVinculados + " equipamento(s) associado(s).",
+            "aviso");
+        return;
+    }
+
+    // Sem vínculos: pede confirmação e exclui
+    if (!window.confirm("Excluir este local?")) { return; }
+
+    dados.dados.locais = dados.dados.locais.filter(function (l) {
+        return l.id !== id;
+    });
+    TechTrack.salvarDados(dados);
+}
+```
+
+Para técnicos, a lógica é equivalente: verifica se existe qualquer manutenção cujo `tecnicoId` corresponda ao técnico antes de permitir a exclusão.
+
+A inativação de técnico tem uma regra adicional: bloqueia quando o técnico possui manutenção com estado `"aberta"` ou `"em_andamento"`:
+
+```javascript
+var estadosAtivos = ["aberta", "em_andamento"];
+for (var j = 0; j < dados.dados.manutencoes.length; j++) {
+    var man = dados.dados.manutencoes[j];
+    if (man.tecnicoId === id && estadosAtivos.indexOf(man.estado) !== -1) {
+        // Bloqueia inativação
+        return;
+    }
+}
+```
+
+---
+
+#### Roteiro de demonstração — Locais e Técnicos
+
+**Preparação:** abrir `cadastros.html` via Live Server. O localStorage deve estar limpo ou com dados válidos.
+
+**Demonstrar locais:**
+
+1. Clicar em **Novo local** — o formulário aparece abaixo da tabela.
+2. Deixar o nome vazio e clicar em **Salvar** — a mensagem de erro aparece inline no campo.
+3. Preencher um nome (ex: "Sala de Servidores") e clicar em **Salvar** — o formulário fecha e a linha aparece na tabela.
+4. Clicar em **Editar** — o formulário reabre com os dados atuais.
+5. Alterar o nome e salvar — a linha é atualizada.
+6. No console do navegador, executar `localStorage.getItem("techtrack:data:v1")` e mostrar o JSON com o local cadastrado.
+7. Recarregar a página — o local ainda aparece na tabela (persistência pelo localStorage).
+8. Clicar em **Excluir** — confirmar a exclusão; a tabela volta ao estado vazio.
+
+**Demonstrar técnicos:**
+
+1. Cadastrar um técnico com nome e contato.
+2. Editar o contato do técnico.
+3. Clicar em **Inativar** — confirmar; o botão muda para **Ativar** e a situação na tabela muda para "Inativo".
+4. Clicar em **Ativar** — situação volta para "Ativo".
+5. Excluir o técnico — confirmar; tabela volta ao estado vazio.
+
+| Conceito da aula | Onde aparece na Etapa 04 |
+|---|---|
+| Formulários HTML (aula 3) | `<form>`, `<input>`, `<label>`, `<textarea>` em `cadastros.html` |
+| `addEventListener` (aula 8.1) | `submit`, `click` nos botões em `cadastros.js` |
+| `preventDefault()` (aula 8.1) | Impede recarregamento da página ao salvar formulário |
+| `createElement` / `appendChild` (aula 8.2) | Criação das linhas da tabela em `criarLinhaLocal` e `criarLinhaTecnico` |
+| `textContent` (aula 8.2) | Exibição segura de dados cadastrados, sem risco de XSS |
+| Arrays e objetos (aula 7) | Estrutura dos locais e técnicos; `push`, `filter` para adicionar e remover |
+| JSON e localStorage (aulas 9.1 e 9.2) | `carregarDados()` e `salvarDados()` em cada operação |
+
+### 6.5 Equipamentos
+
+*A ser preenchido na etapa 05 — CRUD de equipamentos.*
+
+### 6.6 Manutenções
 
 *A ser preenchido na etapa 06 — CRUD de manutenções.*
-
-### 6.6 Locais e Técnicos
-
-*A ser preenchido na etapa 05 — CRUD de locais e técnicos.*
 
 ### 6.7 Histórico
 
@@ -1155,8 +1433,9 @@ Usar Bootstrap ou Tailwind geraria o estilo automaticamente, mas o código CSS r
 | 02    | Identidade visual e CSS responsivo               | ✅ Concluída    |
 | 03    | Modelagem de dados e localStorage                | ✅ Concluída   |
 | 03.1  | Refinamento do armazenamento local               | ✅ Concluída   |
-| 04    | CRUD de equipamentos                             | 🔧 Pendente    |
-| 05    | CRUD de locais e técnicos                        | 🔧 Pendente    |
+| 03.2  | Preservação de conteúdo inválido                 | ✅ Concluída   |
+| 04    | CRUD de locais e técnicos                        | 🔧 Pendente    |
+| 05    | CRUD de equipamentos                             | 🔧 Pendente    |
 | 06    | CRUD de manutenções                              | 🔧 Pendente    |
 | 07    | Dashboard e histórico                            | 🔧 Pendente    |
 | 08    | Relatórios e backup                              | 🔧 Pendente    |
@@ -1165,5 +1444,5 @@ Usar Bootstrap ou Tailwind geraria o estilo automaticamente, mas o código CSS r
 
 ---
 
-*Última atualização: Etapa 03.1 — Refinamento do armazenamento local.*
+*Última atualização: Etapa 04 — CRUD de locais e técnicos.*
 *Este documento será expandido a cada etapa de implementação.*
